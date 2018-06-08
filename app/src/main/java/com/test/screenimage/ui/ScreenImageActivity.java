@@ -143,7 +143,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         tcpSender.setSenderListener(this);
         tcpSender.setVideoParams(mVideoConfiguration);
         //创建连接
-        tcpSender.connect();
+        tcpSender.openConnect();
         setRecordSender(tcpSender);
         //开始执行
         startRecording();

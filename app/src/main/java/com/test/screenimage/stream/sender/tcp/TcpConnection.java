@@ -27,7 +27,6 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     private TcpConnectListener listener;
     private static final String TAG = "TcpConnection";
     private Socket socket;
-//    private State state = State.INIT;
     private ISendQueue mSendQueue;
     private TcpWriteThread mWrite;
     private TcpReadThread mRead;
@@ -38,11 +37,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     private int fps;
     private byte[] mSpsPps;
 
-//    public enum State {
-//        INIT,
-//        CONNECTING,
-//        LIVING
-//    }
+
 
     public void setConnectListener(TcpConnectListener listener) {
         this.listener = listener;
@@ -79,7 +74,6 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             mWrite = new TcpWriteThread(out, mSendQueue, this);
             mRead = new TcpReadThread(in, this);
             mRead.start();
-//            state = State.LIVING;
             listener.onTcpConnectSuccess();
         } catch (IOException e) {
             e.printStackTrace();
@@ -132,7 +126,6 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
                 clearSocket();
             }
         }.start();
-//        state = State.INIT;
     }
 
     private void clearSocket() {
@@ -146,8 +139,5 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
         }
     }
 
-//    public State getState() {
-//        return state;
-//    }
 
 }

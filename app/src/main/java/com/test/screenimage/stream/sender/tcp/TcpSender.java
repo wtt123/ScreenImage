@@ -62,14 +62,79 @@ public class TcpSender implements Sender, SendQueueListener {
         mSendQueue.putFrame(frame);
     }
 
+    /**
+     * 开启连接
+     */
+    public void openConnect() {
+        //设置缓存队列
+        mTcpConnection.setSendQueue(mSendQueue);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                connectNotInUi();
+            }
+        }).start();
+
+    }
+    private synchronized void connectNotInUi() {
+        //设置连接回调
+        mTcpConnection.setConnectListener(mTcpListener);
+        //开始连接服务器
+        mTcpConnection.connect(ip, port);
+    }
+
+    // TODO: 2018/6/4 监听回调
+    private TcpConnectListener mTcpListener = new TcpConnectListener() {
+        @Override
+        public void onSocketConnectSuccess() {
+            connected();
+        }
+
+        @Override
+        public void onSocketConnectFail() {
+            disConnected();
+        }
+
+        @Override
+        public void onTcpConnectSuccess() {
+           connected();
+        }
+
+        @Override
+        public void onTcpConnectFail() {
+            disConnected();
+        }
+
+        @Override
+        public void onPublishSuccess() {
+            //数据发送成功
+            connected();
+        }
+
+        @Override
+        public void onPublishFail() {
+            //数据发送失败
+            weakHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sendListener.onPublishFail();
+                }
+            });
+        }
+
+        @Override
+        public void onSocketDisconnect() {
+            disConnected();
+        }
+
+    };
+
 
     @Override
     public void stop() {
         mTcpConnection.stop();
         mSendQueue.stop();
     }
-
-
 
 
     @Override
@@ -94,69 +159,10 @@ public class TcpSender implements Sender, SendQueueListener {
         });
     }
 
-    // TODO: 2018/6/4 监听回调
-    private TcpConnectListener mTcpListener = new TcpConnectListener() {
-        @Override
-        public void onSocketConnectSuccess() {
-//            connected();
-        }
 
-        @Override
-        public void onSocketConnectFail() {
-            disConnected();
-        }
 
-        @Override
-        public void onTcpConnectSuccess() {
-//           connect();
-        }
 
-        @Override
-        public void onTcpConnectFail() {
-          disConnected();
-        }
 
-        @Override
-        public void onPublishSuccess() {
-         connect();
-        }
-
-        @Override
-        public void onPublishFail() {
-            //数据发送失败
-            weakHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    sendListener.onPublishFail();
-                }
-            });
-        }
-
-        @Override
-        public void onSocketDisconnect() {
-            disConnected();
-        }
-
-    };
-
-    public void connect() {
-        //设置缓存队列
-        mTcpConnection.setSendQueue(mSendQueue);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                connectNotInUi();
-            }
-        }).start();
-
-    }
-
-    private synchronized void connectNotInUi() {
-        //设置连接回调
-        mTcpConnection.setConnectListener(mTcpListener);
-        //开始连接服务器
-        mTcpConnection.connect(ip, port);
-    }
     // TODO: 2018/6/6 连接成功
     private void connected() {
         weakHandler.post(new Runnable() {
@@ -177,6 +183,7 @@ public class TcpSender implements Sender, SendQueueListener {
             }
         });
     }
+
     public void setSenderListener(OnSenderListener listener) {
         this.sendListener = listener;
     }
