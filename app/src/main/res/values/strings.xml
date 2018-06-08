@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ScreenImage</string>
+    <item name="is_scale_size_tag" type="id" />
+    <item name="is_scale_font_tag" type="id" />
+</resources>
