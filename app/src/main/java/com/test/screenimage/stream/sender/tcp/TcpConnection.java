@@ -38,7 +38,6 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     private byte[] mSpsPps;
 
 
-
     public void setConnectListener(TcpConnectListener listener) {
         this.listener = listener;
     }
@@ -48,11 +47,12 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     }
 
     //连接服务端
-    public void connect(String ip, int port) {
+    public void connect(String ip, int port, int mainCmd, int subCmd, String sendBody) {
         socket = new Socket();
         SocketAddress socketAddress = new InetSocketAddress(ip, port);
         try {
             socket.connect(socketAddress, 20000);
+            //tcp连接成功后is.read阻塞多长时间
             socket.setSoTimeout(60000);
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,11 +67,11 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             return;
         }
         try {
-            // 获取当前连接的输入流
-            in = new BufferedInputStream(socket.getInputStream());
             // 获取当前连接的输出流
             out = new BufferedOutputStream(socket.getOutputStream());
-            mWrite = new TcpWriteThread(out, mSendQueue, this);
+            // 获取当前连接的输入流
+            in = new BufferedInputStream(socket.getInputStream());
+            mWrite = new TcpWriteThread(out, mSendQueue, mainCmd, subCmd, sendBody, this);
             mRead = new TcpReadThread(in, this);
             mRead.start();
             listener.onTcpConnectSuccess();
@@ -99,11 +99,21 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     }
 
     @Override
-    public void connectSuccess() {
-        //收到回执消息，连接成功，开启发送
-        Log.e("wt", "connectSuccess: 开启发送" );
-        mWrite.start();
+    public void connectSuccess(short mainCmd, short subCmd, String body) {
+        switch (subCmd) {
+            case 0x1C:
+                //连接成功，开启发送线程
+                mWrite.start();
+                break;
+        }
     }
+
+//    @Override
+////    public void connectSuccess() {
+////        //收到回执消息，连接成功，开启发送
+////        Log.e("wt", "connectSuccess: 开启发送");
+////        mWrite.start();
+////    }
 
 
     public void stop() {

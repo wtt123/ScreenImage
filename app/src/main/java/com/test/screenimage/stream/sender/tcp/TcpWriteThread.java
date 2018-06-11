@@ -19,14 +19,30 @@ public class TcpWriteThread extends Thread {
     private BufferedOutputStream bos;
     private ISendQueue iSendQueue;
     private volatile boolean startFlag;
+    private int mainCmd;
+    private int subCmd;
+    private String sendBody;
     private OnTcpWriteListener mListener;
     private final String TAG = "TcpWriteThread";
 
-    public TcpWriteThread(BufferedOutputStream bos, ISendQueue sendQueue, OnTcpWriteListener listener) {
+    /**
+     * by wt
+     * @param bos 输入流
+     * @param sendQueue
+     * @param mainCmd 主指令
+     * @param subCmd 子指令
+     * @param sendBody 文本消息内容
+     * @param listener
+     */
+    public TcpWriteThread(BufferedOutputStream bos, ISendQueue sendQueue, int mainCmd,
+                          int subCmd,String sendBody, OnTcpWriteListener listener) {
         this.bos = bos;
-        startFlag = true;
         this.iSendQueue = sendQueue;
+        this.mainCmd=mainCmd;
+        this.subCmd=subCmd;
+        this.sendBody=sendBody;
         this.mListener = listener;
+        startFlag = true;
     }
 
     @Override
@@ -51,7 +67,7 @@ public class TcpWriteThread extends Thread {
     // TODO: 2018/6/4 wt 发送数据
     public void sendData(byte[] buff) {
         try {
-            EncodeV1 encodeV1 = new EncodeV1(buff);
+            EncodeV1 encodeV1 = new EncodeV1(mainCmd,subCmd,sendBody,buff);
             bos.write(encodeV1.buildSendContent());
             bos.flush();
 //            Log.e(TAG,"send data ");

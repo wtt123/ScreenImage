@@ -25,6 +25,10 @@ public class TcpSender implements Sender, SendQueueListener {
     private WeakHandler weakHandler = new WeakHandler();
     private String ip;
     private int port;
+    private int mainCmd;
+    private int subCmd;
+    //文本消息
+    private String sendBody=null;
 
 
     public TcpSender(String ip, int port) {
@@ -33,17 +37,26 @@ public class TcpSender implements Sender, SendQueueListener {
         this.port = port;
     }
 
-    @Override
-    public void start() {
-        mSendQueue.setSendQueueListener(this);
-        mSendQueue.start();
-    }
-
     public void setVideoParams(VideoConfiguration videoConfiguration) {
         mTcpConnection.setVideoParams(videoConfiguration);
     }
 
-    // TODO: 2018/5/29 wt修改
+    // TODO: 2018/6/11 wt设置主指令
+    public void setMianCmd(int mainCmd){
+        this.mainCmd=mainCmd;
+    }
+
+    // TODO: 2018/6/11 wt设置子指令
+    public void setSubCmd(int subCmd){
+        this.subCmd=subCmd;
+    }
+
+    // TODO: 2018/6/11 wt设置要发送的文本内容
+    public void setSendBody(String body){
+        this.sendBody=body;
+    }
+
+    // TODO: 2018/5/29 wt
     @Override
     public void onData(byte[] data, int type) {
         Frame frame = null;
@@ -76,11 +89,17 @@ public class TcpSender implements Sender, SendQueueListener {
         }).start();
 
     }
+
+    @Override
+    public void start() {
+        mSendQueue.setSendQueueListener(this);
+        mSendQueue.start();
+    }
     private synchronized void connectNotInUi() {
         //设置连接回调
         mTcpConnection.setConnectListener(mTcpListener);
         //开始连接服务器
-        mTcpConnection.connect(ip, port);
+        mTcpConnection.connect(ip, port,mainCmd,subCmd,sendBody);
     }
 
     // TODO: 2018/6/4 监听回调

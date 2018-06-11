@@ -12,6 +12,7 @@ import android.widget.Button;
 import com.test.screenimage.R;
 import com.test.screenimage.configuration.AudioConfiguration;
 import com.test.screenimage.configuration.VideoConfiguration;
+import com.test.screenimage.constant.ScreenImageApi;
 import com.test.screenimage.controller.StreamController;
 import com.test.screenimage.controller.audio.NormalAudioController;
 import com.test.screenimage.controller.video.ScreenVideoController;
@@ -43,7 +44,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     private int port = 11111;
     private String mIp;
-    private boolean isStart=false;
+    private boolean isStart = false;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_screen_image;
@@ -66,15 +68,15 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         switch (view.getId()) {
             case R.id.btn_start:
                 //开始录制视频
-                if (isStart){
+                if (isStart) {
                     return;
                 }
                 requestRecording();
-                isStart=true;
+                isStart = true;
                 break;
             case R.id.btn_stop:
                 stopRecording();
-                isStart=false;
+                isStart = false;
                 break;
         }
     }
@@ -140,8 +142,10 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         setRecordPacker(packer);
 
         tcpSender = new TcpSender(mIp, port);
-        tcpSender.setSenderListener(this);
+        tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
+        tcpSender.setSubCmd(ScreenImageApi.RECORD.Command_HostUpdated);
         tcpSender.setVideoParams(mVideoConfiguration);
+        tcpSender.setSenderListener(this);
         //创建连接
         tcpSender.openConnect();
         setRecordSender(tcpSender);
