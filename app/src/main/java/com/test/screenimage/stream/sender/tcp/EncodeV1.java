@@ -16,8 +16,8 @@ import java.nio.ByteBuffer;
 public class EncodeV1 {
     private int mainCmd;
     private int subCmd;
-    private String sendBody;
-    private byte[] sendBuffer;    //要发送的内容
+    private String sendBody;//要发送的内容
+    private byte[] sendBuffer;    //要发送的音视频内容
 
 //    public EncodeV1(byte[] buff) {
 //        this.buff = buff;

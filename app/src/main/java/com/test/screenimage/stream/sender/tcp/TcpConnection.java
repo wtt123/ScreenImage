@@ -101,7 +101,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     @Override
     public void connectSuccess(short mainCmd, short subCmd, String body) {
         switch (subCmd) {
-            case 0x1C:
+            case 0x01:
                 //连接成功，开启发送线程
                 mWrite.start();
                 break;

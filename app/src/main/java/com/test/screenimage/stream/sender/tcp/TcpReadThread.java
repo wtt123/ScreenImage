@@ -58,7 +58,7 @@ public class TcpReadThread extends Thread {
         if (bis.available() <= 0) {
             return;
         }
-        byte[] bytes = readByte(bis, 13);
+        byte[] bytes = readByte(bis, 18);
         byte netVersion = bytes[0];
         if (netVersion == ScreenImageApi.encodeVersion1) {
             netForV1(bis, mListener, bytes);
@@ -86,24 +86,25 @@ public class TcpReadThread extends Thread {
     // TODO: 2018/6/11 wt处理协议相应指令
     private void netForV1(BufferedInputStream bis, OnTcpReadListener listener, byte[] bytes)
             throws IOException {
-        final byte appCodeCmd = bytes[2];
-        byte[] buff = new byte[2];
+
         //实现数组之间的复制
         //bytes：源数组
         //srcPos：源数组要复制的起始位置
         //dest：目的数组
         //destPos：目的数组放置的起始位置
         //length：复制的长度
-        System.arraycopy(bytes, 1, buff, 0, 2);
-        final short mainCmd = ByteUtil.bytesToShort(buff);       //主指令  1`2
-        System.arraycopy(bytes, 2, buff, 0, 2);
-        final short subCmd = ByteUtil.bytesToShort(buff);    //子指令  2`3
+        byte[] buff = new byte[4];
+        System.arraycopy(bytes, 1, buff, 0, 4);
+        final short mainCmd = ByteUtil.bytesToShort(buff);       //主指令  1`5
+        buff=new byte[4];
+        System.arraycopy(bytes, 5, buff, 0, 4);
+        final short subCmd = ByteUtil.bytesToShort(buff);    //子指令  5`9
         buff = new byte[4];
-        System.arraycopy(bytes, 3, buff, 0, 4);
-        int stringBodySize = ByteUtil.bytesToInt(buff);//文本数据 3 ~ 7;
+        System.arraycopy(bytes, 9, buff, 0, 4);
+        int stringBodySize = ByteUtil.bytesToInt(buff);//文本数据 9 ~ 13;
         buff = new byte[4];
-        System.arraycopy(bytes, 8, buff, 0, 4);
-        int byteBodySize = ByteUtil.bytesToInt(buff);//byte数据 8^12
+        System.arraycopy(bytes, 13, buff, 0, 4);
+        int byteBodySize = ByteUtil.bytesToInt(buff);//byte数据 13^17
 
         buff = new byte[2 * 1024];
         int len = 0;
