@@ -143,7 +143,6 @@ public class TcpPacker implements Packer, AnnexbHelper.AnnexbNaluListener {
 
     // TODO: 2018/6/4 wt 给编码出的aac裸流添加adts头字段
     private byte[] getADTSHeader(int packetLen) {
-        Log.e("wtt", "getADTSHeader: "+getFrequencyIdx(AudioConfiguration.DEFAULT_FREQUENCY) );
         byte[] packet = new byte[7];
         int profile = 2;  //AAC LC
         int freqIdx = getFrequencyIdx(AudioConfiguration.DEFAULT_FREQUENCY);  //44100Hz

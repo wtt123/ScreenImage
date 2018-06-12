@@ -1,5 +1,8 @@
 package com.test.screenimage.stream.sender.tcp.interf;
 
+import com.test.screenimage.entity.ReceiveData;
+import com.test.screenimage.entity.ReceiveHeader;
+
 /**
  * Created by wt
  * Date on  2018/5/28
@@ -12,6 +15,6 @@ public interface OnTcpReadListener {
     void socketDisconnect();    //断开连接
 
     //收到server消息,连接成功
-    //mainCmd:主指令 subCmd:子指令 body：消息内容
-    void connectSuccess(short mainCmd, short subCmd, String body);
+    //date:解析后的数据包
+    void connectSuccess(ReceiveData data);
 }

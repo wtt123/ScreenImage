@@ -3,6 +3,7 @@ package com.test.screenimage.stream.sender.tcp;
 import android.util.Log;
 
 import com.test.screenimage.configuration.VideoConfiguration;
+import com.test.screenimage.entity.ReceiveData;
 import com.test.screenimage.stream.sender.sendqueue.ISendQueue;
 import com.test.screenimage.stream.sender.tcp.interf.OnTcpReadListener;
 import com.test.screenimage.stream.sender.tcp.interf.OnTcpWriteListener;
@@ -99,7 +100,13 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     }
 
     @Override
-    public void connectSuccess(short mainCmd, short subCmd, String body) {
+    public void connectSuccess(ReceiveData data) {
+        //收到数据后，解析后得到数据
+        Log.e("wtt", "connectSuccess: "+data.getHeader().getSubCmd() );
+        if (data==null){
+            return;
+        }
+        int subCmd=data.getHeader().getSubCmd();
         switch (subCmd) {
             case 0x01:
                 //连接成功，开启发送线程
@@ -108,12 +115,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
         }
     }
 
-//    @Override
-////    public void connectSuccess() {
-////        //收到回执消息，连接成功，开启发送
-////        Log.e("wt", "connectSuccess: 开启发送");
-////        mWrite.start();
-////    }
+
 
 
     public void stop() {

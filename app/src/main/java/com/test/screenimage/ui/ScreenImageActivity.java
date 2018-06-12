@@ -53,8 +53,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void initView() {
-        Intent intent = getIntent();
-        mIp = intent.getStringExtra("ip");
+//        Intent intent = getIntent();
+//        mIp = intent.getStringExtra("ip");
     }
 
     @Override
@@ -141,7 +141,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         setVideoConfiguration(mVideoConfiguration);
         setRecordPacker(packer);
 
-        tcpSender = new TcpSender(mIp, port);
+        tcpSender = new TcpSender("192.169.0.165", port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.Command_HostUpdated);
         tcpSender.setVideoParams(mVideoConfiguration);
