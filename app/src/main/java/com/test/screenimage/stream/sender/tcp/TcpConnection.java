@@ -110,6 +110,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
         switch (subCmd) {
             case 0x01:
                 //连接成功，开启发送线程
+                Log.e("wtt", "connectSuccess: 走了" );
                 mWrite.start();
                 break;
         }

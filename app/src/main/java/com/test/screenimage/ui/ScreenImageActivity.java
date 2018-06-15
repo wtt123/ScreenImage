@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
@@ -141,9 +142,9 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         setVideoConfiguration(mVideoConfiguration);
         setRecordPacker(packer);
 
-        tcpSender = new TcpSender("192.169.0.165", port);
+        tcpSender = new TcpSender("192.169.0.217", port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
-        tcpSender.setSubCmd(ScreenImageApi.RECORD.Command_HostUpdated);
+        tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
         tcpSender.setVideoParams(mVideoConfiguration);
         tcpSender.setSenderListener(this);
         //创建连接

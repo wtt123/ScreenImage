@@ -1,5 +1,7 @@
 package com.test.screenimage.utils;
 
+import android.util.Log;
+
 import com.test.screenimage.entity.ReceiveData;
 import com.test.screenimage.entity.ReceiveHeader;
 import java.io.ByteArrayOutputStream;
@@ -52,6 +54,7 @@ public class AnalyticDataUtils {
         ReceiveData data = new ReceiveData();
         data.setHeader(receiveHeader);
         data.setSendBody(sendBody == null ? "" : sendBody.toString());
+        Log.e("wtt", "analyticData: "+sendBody.toString() );
         data.setBuff(buff);
         mListener.onSuccess(data);
     }

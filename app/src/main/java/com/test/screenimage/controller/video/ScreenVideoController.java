@@ -39,6 +39,7 @@ public class ScreenVideoController implements IVideoController {
 
     @Override
     public void start() {
+        //关于屏幕采集
         mEncoder = new ScreenRecordEncoder(mVideoConfiguration);
         final Surface surface = mEncoder.getSurface();
         mEncoder.start();
@@ -46,6 +47,7 @@ public class ScreenVideoController implements IVideoController {
         mMediaProjection = mManager.getMediaProjection(resultCode, resultData);
         int width = VideoMediaCodec.getVideoSize(mVideoConfiguration.width);
         int height = VideoMediaCodec.getVideoSize(mVideoConfiguration.height);
+        //实例化VirtualDisplay,这个类的主要作用是用来获取屏幕信息并保存在里。
         mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenRecoder",
                 width, height, 1, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, surface, null, null);
     }
