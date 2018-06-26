@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lLayout_bg"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30px"
+        android:layout_marginRight="30px"
+        android:layout_marginTop="30px"
+        android:includeFontPadding="false"
+        android:lineSpacingExtra="8px"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textSize="45px"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txt_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30px"
+        android:layout_marginLeft="30px"
+        android:layout_marginRight="30px"
+        android:layout_marginTop="20px"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:textSize="40px"
+
+        />
+
+    <EditText
+        android:id="@+id/et_msg"
+        android:layout_width="match_parent"
+        android:layout_height="100px"
+        android:layout_marginBottom="20px"
+        android:layout_marginLeft="45px"
+        android:layout_marginRight="45px"
+        android:background="@drawable/bg_recommend"
+        android:maxLength="7"
+        android:maxLines="1"
+        android:paddingLeft="15px"
+        android:singleLine="true"
+        android:textColor="#000000"
+        android:textSize="45px"
+        android:visibility="gone" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="20px"
+        android:background="#c6c6c6" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_neg"
+            android:layout_width="0px"
+            android:layout_height="120px"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:textColor="#037BFF"
+            android:textSize="45px" />
+
+        <ImageView
+            android:id="@+id/img_line"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="#c6c6c6" />
+
+        <Button
+            android:id="@+id/btn_pos"
+            android:layout_width="0px"
+            android:layout_height="120px"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:textColor="#037BFF"
+            android:textSize="45px" />
+    </LinearLayout>
+
+</LinearLayout>

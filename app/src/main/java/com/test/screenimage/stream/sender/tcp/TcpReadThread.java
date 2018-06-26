@@ -26,7 +26,7 @@ import java.io.InputStream;
  */
 
 public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyticDataListener{
-    private final static String TAG = "TcpReadThread";
+    private final static String TAG = "wt";
     private BufferedInputStream bis;
     private AnalyticDataUtils mAnalyticDataUtils;
     private OnTcpReadListener mListener;
@@ -50,7 +50,7 @@ public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyti
             } catch (IOException e) {
                 startFlag = false;
                 mListener.socketDisconnect();
-//                Log.e(TAG, "read data Exception = " + e.toString());
+                Log.e(TAG, "read data Exception = " + e.toString());
             }
         }
     }

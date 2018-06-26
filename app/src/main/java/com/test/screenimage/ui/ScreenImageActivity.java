@@ -1,11 +1,13 @@
 package com.test.screenimage.ui;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,8 +23,10 @@ import com.test.screenimage.core.BaseActivity;
 import com.test.screenimage.stream.packer.TcpPacker;
 import com.test.screenimage.stream.sender.OnSenderListener;
 import com.test.screenimage.stream.sender.tcp.TcpSender;
+import com.test.screenimage.utils.DialogUtils;
 import com.test.screenimage.utils.SopCastLog;
 import com.test.screenimage.utils.SopCastUtils;
+import com.test.screenimage.widget.CustomDialog;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -36,7 +40,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     Button btnStart;
     @BindView(R.id.btn_stop)
     Button btnStop;
-    private String TAG = "wt";
+    private String TAG = "wtt";
     private MediaProjectionManager mMediaProjectionManage;
     private static final int RECORD_REQUEST_CODE = 101;
     private StreamController mStreamController;
@@ -45,7 +49,10 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     private int port = 11111;
     private String mIp;
+    //是否已经开启投屏了
     private boolean isStart = false;
+    private boolean isNetBad = true;
+    private Context context;
 
     @Override
     protected int getLayoutId() {
@@ -54,6 +61,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void initView() {
+        context = this;
 //        Intent intent = getIntent();
 //        mIp = intent.getStringExtra("ip");
     }
@@ -142,7 +150,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         setVideoConfiguration(mVideoConfiguration);
         setRecordPacker(packer);
 
-        tcpSender = new TcpSender("192.169.0.217", port);
+        tcpSender = new TcpSender("192.169.0.198", port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
         tcpSender.setVideoParams(mVideoConfiguration);
@@ -197,18 +205,19 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private void stopRecording() {
         if (mStreamController != null) {
             mStreamController.stop();
+            isStart=false;
         }
     }
 
     @Override
     public void onConnecting() {
-
+        Log.e(TAG, "onConnecting: 链接中" );
     }
 
     @Override
     public void onConnected() {
         //连接成功
-//        Log.e(TAG, "onConnected: 连接成功");
+        Log.e(TAG, "onConnected: 连接成功");
     }
 
     @Override
@@ -233,6 +242,26 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onNetBad() {
         //网络差
+        if (isNetBad) {
+            new CustomDialog(context).builder()
+                    .setTitle("温馨提示！")
+                    .setMessage("当前网络较差")
+                    .setPositiveButton("停止投屏", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            stopRecording();
+                        }
+                    })
+                    .setNegativeButton("继续投屏", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                        }
+                    })
+                    .setCancelable(false).show();
+            isNetBad = false;
+        }
+
         Log.e(TAG, "onConnected: 网络差");
     }
 
