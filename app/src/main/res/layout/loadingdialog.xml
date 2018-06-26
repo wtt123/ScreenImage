@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:gravity="center"
+    android:padding="20px"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/loading_bar"
+        android:layout_width="100px"
+        android:layout_height="100px"
+        android:layout_gravity="center"
+        android:src="@drawable/f_new_image_progress_popbox" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:textSize="40px"
+        android:text="正在努力连接……"/>
+ </LinearLayout>

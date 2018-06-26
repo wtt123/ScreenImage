@@ -14,6 +14,9 @@ import android.widget.TextView;
 import com.test.screenimage.R;
 
 
+/**
+ * 关于适配
+ */
 public class SupportMultipleScreensUtil {
 
     public static final int BASE_SCREEN_WIDTH = 1080;

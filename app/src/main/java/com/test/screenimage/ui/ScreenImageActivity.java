@@ -26,7 +26,9 @@ import com.test.screenimage.stream.sender.tcp.TcpSender;
 import com.test.screenimage.utils.DialogUtils;
 import com.test.screenimage.utils.SopCastLog;
 import com.test.screenimage.utils.SopCastUtils;
+import com.test.screenimage.utils.ToastUtils;
 import com.test.screenimage.widget.CustomDialog;
+import com.test.screenimage.widget.LoadingDialog;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -53,6 +55,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private boolean isStart = false;
     private boolean isNetBad = true;
     private Context context;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected int getLayoutId() {
@@ -78,6 +81,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
             case R.id.btn_start:
                 //开始录制视频
                 if (isStart) {
+                    ToastUtils.showShort(context,"正在投屏中，再次点击无效");
                     return;
                 }
                 requestRecording();
@@ -206,6 +210,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         if (mStreamController != null) {
             mStreamController.stop();
             isStart=false;
+            ToastUtils.showShort(context,"已停止投屏");
         }
     }
 
@@ -237,6 +242,10 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onNetGood() {
         //网络好
         Log.e(TAG, "onConnected: 网络好");
+        if (loadingDialog==null){
+            return;
+        }
+        loadingDialog.dismiss();
     }
 
     @Override
@@ -255,13 +264,14 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     .setNegativeButton("继续投屏", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            loadingDialog = new LoadingDialog(context);
+                            loadingDialog.show();
 
                         }
                     })
                     .setCancelable(false).show();
             isNetBad = false;
         }
-
         Log.e(TAG, "onConnected: 网络差");
     }
 

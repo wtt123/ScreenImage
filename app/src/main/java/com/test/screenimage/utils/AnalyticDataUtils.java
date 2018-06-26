@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.test.screenimage.entity.ReceiveData;
 import com.test.screenimage.entity.ReceiveHeader;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import java.io.InputStream;
  */
 public class AnalyticDataUtils {
     private OnAnalyticDataListener mListener;
+
     /**
      * 实现数组之间的复制，分析数据头
      * bytes：源数组
@@ -39,14 +41,14 @@ public class AnalyticDataUtils {
     }
 
 
-    // TODO: 2018/6/11 wt处理协议相应指令
+    // TODO: 2018/6/11 wt处理协议相应指令,把消息内容解析出来
     public void analyticData(InputStream is, ReceiveHeader receiveHeader) throws IOException {
         byte[] sendBody = null;
         byte[] buff = null;
         //文本长度
         if (receiveHeader.getStringBodylength() != 0) {
-            sendBody=new byte[2 * 1024];
-            readByte(is, receiveHeader.getStringBodylength());
+//            sendBody=new byte[2 * 1024];
+            sendBody = readByte(is, receiveHeader.getStringBodylength());
         }
         //音视频长度
         if (receiveHeader.getBuffSize() != 0) {
@@ -54,22 +56,21 @@ public class AnalyticDataUtils {
         }
         ReceiveData data = new ReceiveData();
         data.setHeader(receiveHeader);
-        data.setSendBody(sendBody == null ? "" : sendBody.toString());
-        Log.e("wtt", "analyticData: "+sendBody.toString() );
+        data.setSendBody(sendBody == null ? "" : new String(sendBody));
+        Log.e("wtt", "analyticData: " +new String(sendBody));
         data.setBuff(buff);
         mListener.onSuccess(data);
     }
 
     /**
      * 保证从流里读到指定长度数据
-     *
      * @param is
      * @param readSize
      * @return
-     * @throws Exception
+     * @throws IOException
      */
     public byte[] readByte(InputStream is, int readSize) throws IOException {
-        byte[] buff = new byte[readSize];
+        byte[] buff= new byte[readSize];
         int len = 0;
         int eachLen = 0;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -92,9 +93,10 @@ public class AnalyticDataUtils {
 
     // TODO: 2018/6/12 wt回调解析后数据
     public interface OnAnalyticDataListener {
-        void onSuccess(ReceiveData data) ;
+        void onSuccess(ReceiveData data);
 
     }
+
     public void setOnAnalyticDataListener(OnAnalyticDataListener listener) {
         this.mListener = listener;
     }
