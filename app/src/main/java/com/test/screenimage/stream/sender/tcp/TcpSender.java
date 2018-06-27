@@ -1,5 +1,7 @@
 package com.test.screenimage.stream.sender.tcp;
 
+import android.util.Log;
+
 import com.test.screenimage.configuration.VideoConfiguration;
 import com.test.screenimage.entity.Frame;
 import com.test.screenimage.stream.packer.TcpPacker;
@@ -106,32 +108,38 @@ public class TcpSender implements Sender, SendQueueListener {
     private TcpConnectListener mTcpListener = new TcpConnectListener() {
         @Override
         public void onSocketConnectSuccess() {
+            Log.e("wt", "onSocketConnectSuccess: onSocketConnectSuccess" );
             connected();
         }
 
         @Override
         public void onSocketConnectFail() {
+            Log.e("wt", "onSocketConnectFail: onSocketConnectFail" );
             disConnected();
         }
 
         @Override
         public void onTcpConnectSuccess() {
+            Log.e("wt", "onTcpConnectSuccess: onTcpConnectSuccess");
            connected();
         }
 
         @Override
         public void onTcpConnectFail() {
+            Log.e("wt", "onTcpConnectFail: onTcpConnectFail");
             disConnected();
         }
 
         @Override
         public void onPublishSuccess() {
             //数据发送成功
+            Log.e("wt", "onPublishSuccess: onPublishSuccess" );
             connected();
         }
 
         @Override
         public void onPublishFail() {
+            Log.e("wt", "onPublishFail: onPublishFail" );
             //数据发送失败
             weakHandler.post(new Runnable() {
                 @Override
@@ -143,6 +151,7 @@ public class TcpSender implements Sender, SendQueueListener {
 
         @Override
         public void onSocketDisconnect() {
+            Log.e("wt", "onSocketDisconnect: onSocketDisconnect");
             disConnected();
         }
 

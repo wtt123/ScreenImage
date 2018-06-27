@@ -210,6 +210,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         if (mStreamController != null) {
             mStreamController.stop();
             isStart=false;
+            isNetBad=true;
             ToastUtils.showShort(context,"已停止投屏");
         }
     }
@@ -223,6 +224,10 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onConnected() {
         //连接成功
         Log.e(TAG, "onConnected: 连接成功");
+        if (loadingDialog==null){
+            return;
+        }
+        loadingDialog.dismiss();
     }
 
     @Override
@@ -250,6 +255,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onNetBad() {
+        Log.e(TAG, "onConnected: 网络差");
         //网络差
         if (isNetBad) {
             new CustomDialog(context).builder()
@@ -272,7 +278,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     .setCancelable(false).show();
             isNetBad = false;
         }
-        Log.e(TAG, "onConnected: 网络差");
+
     }
 
     @Override

@@ -189,6 +189,8 @@ public class NormalSendQueue implements ISendQueue {
         @Override
         public void run() {
             while (mScanFlag) {
+                Log.e("wt", "run: mCurrentScanTime"+mCurrentScanTime);
+                Log.e("wt", "run: SCAN_MAX_TIME"+SCAN_MAX_TIME );
                 //达到仲裁次数了
                 if (mCurrentScanTime == SCAN_MAX_TIME) {
                     int averageDif = 0;
@@ -202,7 +204,8 @@ public class NormalSendQueue implements ISendQueue {
                         averageDif += dif;
                         strLog = strLog + String.format("n%d:%d  ", i, dif);
                     }
-                    SopCastLog.d(Constants.TAG, strLog);
+                    SopCastLog.e(Constants.TAG, strLog);
+                    Log.e("wt", "run: "+negativeCounter );
                     if (negativeCounter >= DEFAULT_NEGATIVE_COUNT || averageDif < -100) {
                         //坏
                         SopCastLog.d(Constants.TAG, "Bad Send Speed.");
@@ -211,14 +214,14 @@ public class NormalSendQueue implements ISendQueue {
                         }
                     } else {
                         //好
-                        SopCastLog.d(Constants.TAG, "Good Send Speed.");
+                        SopCastLog.e(Constants.TAG, "Good Send Speed.");
                         if (mSendQueueListener != null) {
                             mSendQueueListener.good();
                         }
                     }
                     //清空
                     mScanSnapShotList.clear();
-                    mCurrentScanTime = 0;
+
                 }
                 mScanSnapShotList.add(new ScanSnapShot(mInFrameCount.get(), mOutFrameCount.get()));
                 mInFrameCount.set(0);

@@ -125,9 +125,11 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             public void run() {
                 super.run();
                 if (mWrite != null) {
+                    Log.e("wt", "run: 关闭写" );
                     mWrite.shutDown();
                 }
                 if (mRead != null) {
+                    Log.e("wt", "run: 关闭读" );
                     mRead.shutDown();
                 }
                 try {
@@ -141,9 +143,11 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
         }.start();
     }
 
+    //关闭连接
     private void clearSocket() {
         if (socket != null && socket.isConnected()) {
             try {
+                Log.e("wt", "clearSocket: 释放端口" );
                 socket.close();
                 socket = null;
             } catch (Exception e) {
