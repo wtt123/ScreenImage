@@ -42,7 +42,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     Button btnStart;
     @BindView(R.id.btn_stop)
     Button btnStop;
-    private String TAG = "wtt";
+    private String TAG = "wt";
     private MediaProjectionManager mMediaProjectionManage;
     private static final int RECORD_REQUEST_CODE = 101;
     private StreamController mStreamController;
@@ -154,7 +154,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         setVideoConfiguration(mVideoConfiguration);
         setRecordPacker(packer);
 
-        tcpSender = new TcpSender("192.169.0.159", port);
+        tcpSender = new TcpSender("192.169.0.245", port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
         tcpSender.setVideoParams(mVideoConfiguration);

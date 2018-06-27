@@ -115,6 +115,7 @@ public class TcpSender implements Sender, SendQueueListener {
 
         @Override
         public void onSocketConnectFail() {
+
             disConnected();
         }
 
