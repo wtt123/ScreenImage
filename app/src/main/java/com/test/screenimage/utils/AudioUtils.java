@@ -61,6 +61,7 @@ public class AudioUtils {
         if(audioConfiguration.channelCount == 2) {
             channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
         }
+        //音频源:麦克风
         int audioSource = MediaRecorder.AudioSource.MIC;
         if(audioConfiguration.aec) {
             //对麦克风中类似ip通话的交流声音进行识别，默认会开启回声消除和自动增益
@@ -70,6 +71,8 @@ public class AudioUtils {
         AudioManager audioManager = (AudioManager)context.getSystemService(context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
         audioManager.setSpeakerphoneOn(true);
+        audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 0,
+                AudioManager.STREAM_VOICE_CALL);
         //音频源，采样率，声道数，采样位数，缓冲区大小
         Log.e("wtt", "getAudioRecord: "+ getRecordBufferSize(audioConfiguration) );
         AudioRecord audioRecord = new AudioRecord(audioSource, frequency,

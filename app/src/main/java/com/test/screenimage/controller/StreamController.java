@@ -82,8 +82,10 @@ public class StreamController implements OnAudioEncodeListener, OnVideoEncodeLis
                     mAudioController.setAudioEncodeListener(null);
                     mAudioController.stop();
                 }
-                mVideoController.setVideoEncoderListener(null);
-                mVideoController.stop();
+                if (mVideoController != null) {
+                    mVideoController.setVideoEncoderListener(null);
+                    mVideoController.stop();
+                }
                 if (mSender != null) {
                     mSender.stop();
                 }
