@@ -89,7 +89,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.btn_stop:
                 stopRecording();
-                isStart = false;
+                resetStatus();
                 break;
         }
     }
@@ -154,7 +154,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         setVideoConfiguration(mVideoConfiguration);
         setRecordPacker(packer);
 
-        tcpSender = new TcpSender("192.169.0.198", port);
+        tcpSender = new TcpSender("192.169.0.159", port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
         tcpSender.setVideoParams(mVideoConfiguration);
@@ -209,7 +209,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private void stopRecording() {
         if (mStreamController != null) {
             mStreamController.stop();
-            isStart=false;
+            resetStatus();
             isNetBad=true;
             ToastUtils.showShort(context,"已停止投屏");
         }
@@ -233,6 +233,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onDisConnected() {
         //连接失败
+        ToastUtils.showShort(context,"连接已断开");
+        resetStatus();
         Log.e(TAG, "onConnected: 连接失败");
     }
 
@@ -281,6 +283,11 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     }
 
+    // TODO: 2018/6/27 把开始投屏按钮状态重置
+    private void resetStatus(){
+        isStart=false;
+    }
+
     @Override
     protected void onDestroy() {
         tcpSender.stop();
@@ -292,4 +299,5 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         moveTaskToBack(true);
         super.onBackPressed();
     }
+
 }

@@ -189,8 +189,8 @@ public class NormalSendQueue implements ISendQueue {
         @Override
         public void run() {
             while (mScanFlag) {
-                Log.e("wt", "run: mCurrentScanTime"+mCurrentScanTime);
-                Log.e("wt", "run: SCAN_MAX_TIME"+SCAN_MAX_TIME );
+                Log.e("tt", "run: mCurrentScanTime "+mCurrentScanTime);
+                Log.e("tt", "run: SCAN_MAX_TIME "+SCAN_MAX_TIME );
                 //达到仲裁次数了
                 if (mCurrentScanTime == SCAN_MAX_TIME) {
                     int averageDif = 0;
@@ -205,7 +205,7 @@ public class NormalSendQueue implements ISendQueue {
                         strLog = strLog + String.format("n%d:%d  ", i, dif);
                     }
                     SopCastLog.e(Constants.TAG, strLog);
-                    Log.e("wt", "run: "+negativeCounter );
+                    Log.e("tt", "run:negativeCounter "+negativeCounter );
                     if (negativeCounter >= DEFAULT_NEGATIVE_COUNT || averageDif < -100) {
                         //坏
                         SopCastLog.d(Constants.TAG, "Bad Send Speed.");

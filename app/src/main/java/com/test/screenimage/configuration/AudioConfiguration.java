@@ -16,8 +16,8 @@ import android.util.Log;
  */
 public final class AudioConfiguration {
     //采样率
-//    public static final int DEFAULT_FREQUENCY = 44100;
-    public static final int DEFAULT_FREQUENCY = 8000;
+    public static final int DEFAULT_FREQUENCY = 44100;
+//    public static final int DEFAULT_FREQUENCY = 8000;
     public static final int DEFAULT_MAX_BPS = 64;
     public static final int DEFAULT_MIN_BPS = 32;
     public static final int DEFAULT_ADTS = 0;
@@ -26,7 +26,7 @@ public final class AudioConfiguration {
     //设置每个样本的分辨率为16位或者8位，16位将占用更多的空间和处理能力,表示的音频也更加接近真实
     public static final int DEFAULT_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
     public static final int DEFAULT_AAC_PROFILE = MediaCodecInfo.CodecProfileLevel.AACObjectLC;
-    public static final int DEFAULT_CHANNEL_COUNT = 1;
+    public static final int DEFAULT_CHANNEL_COUNT = 2;
     public static final boolean DEFAULT_AEC = true;
 
     public final int minBps;
