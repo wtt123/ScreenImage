@@ -25,19 +25,22 @@ import java.io.InputStream;
  * @Desc 处理流消息
  */
 
-public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyticDataListener{
+public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyticDataListener {
     private final static String TAG = "wt";
     private BufferedInputStream bis;
     private AnalyticDataUtils mAnalyticDataUtils;
     private OnTcpReadListener mListener;
     private volatile boolean startFlag;
 
-    public TcpReadThread(BufferedInputStream bis, OnTcpReadListener listener) {
+    public TcpReadThread(BufferedInputStream bis) {
         this.bis = bis;
         mAnalyticDataUtils = new AnalyticDataUtils();
         mAnalyticDataUtils.setOnAnalyticDataListener(this);
-        this.mListener = listener;
         startFlag = true;
+    }
+
+    public void setOnTcpReadListener(OnTcpReadListener listener) {
+        this.mListener = listener;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyti
                 acceptMsg();
             } catch (IOException e) {
                 startFlag = false;
-                mListener.socketDisconnect();
+                if (mListener != null) mListener.socketDisconnect();
                 Log.e(TAG, "read data Exception = " + e.toString());
             }
         }
@@ -68,17 +71,16 @@ public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyti
         //根据协议分析数据头
         ReceiveHeader receiveHeader = mAnalyticDataUtils.analysisHeader(header);
         if (receiveHeader.getStringBodylength() == 0 && receiveHeader.getBuffSize() == 0) {
-             SopCastLog.e("wtt","接收数据为空");
-             return;
+            SopCastLog.e("wtt", "接收数据为空");
+            return;
         }
         if (receiveHeader.getEncodeVersion() != ScreenImageApi.encodeVersion1) {
-            SopCastLog.e("wtt","收到的消息无法解析");
+            SopCastLog.e("wtt", "收到的消息无法解析");
             return;
         }
         //解析数据
-        mAnalyticDataUtils.analyticData(bis,receiveHeader);
+        mAnalyticDataUtils.analyticData(bis, receiveHeader);
     }
-
 
 
 //        if (mListener == null) {
@@ -147,6 +149,6 @@ public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyti
 
     @Override
     public void onSuccess(ReceiveData data) {
-        mListener.connectSuccess(data);
+        if (mListener != null) mListener.connectSuccess(data);
     }
 }

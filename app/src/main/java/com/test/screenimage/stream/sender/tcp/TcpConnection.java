@@ -72,8 +72,10 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             out = new BufferedOutputStream(socket.getOutputStream());
             // 获取当前连接的输入流
             in = new BufferedInputStream(socket.getInputStream());
-            mWrite = new TcpWriteThread(out, mSendQueue, mainCmd, subCmd, sendBody, this);
-            mRead = new TcpReadThread(in, this);
+            mWrite = new TcpWriteThread(out, mSendQueue, mainCmd, subCmd, sendBody);
+            mWrite.setOnTcpWriteThread(this);
+            mRead = new TcpReadThread(in);
+            mRead.setOnTcpReadListener(this);
             mRead.start();
             listener.onTcpConnectSuccess();
         } catch (IOException e) {
@@ -102,21 +104,19 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     @Override
     public void connectSuccess(ReceiveData data) {
         //收到数据后，解析后得到数据
-        Log.e("wtt", "connectSuccess: "+data.getHeader().getSubCmd() );
-        if (data==null){
+        Log.e("wtt", "connectSuccess: " + data.getHeader().getSubCmd());
+        if (data == null) {
             return;
         }
-        int subCmd=data.getHeader().getSubCmd();
+        int subCmd = data.getHeader().getSubCmd();
         switch (subCmd) {
             case 0x01:
                 //连接成功，开启发送线程
-                Log.e("wtt", "connectSuccess: 走了" );
+                Log.e("wtt", "connectSuccess: 走了");
                 mWrite.start();
                 break;
         }
     }
-
-
 
 
     public void stop() {
@@ -124,12 +124,6 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             @Override
             public void run() {
                 super.run();
-                if (mWrite != null) {
-                    mWrite.shutDown();
-                }
-                if (mRead != null) {
-                    mRead.shutDown();
-                }
                 try {
                     if (out != null) out.close();
                     if (in != null) in.close();
@@ -137,6 +131,14 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
                     e.printStackTrace();
                 }
                 clearSocket();
+                if (mWrite != null) {
+                    mWrite.setOnTcpWriteThread(null);
+                    mWrite.shutDown();
+                }
+                if (mRead != null) {
+                    mRead.setOnTcpReadListener(null);
+                    mRead.shutDown();
+                }
             }
         }.start();
     }

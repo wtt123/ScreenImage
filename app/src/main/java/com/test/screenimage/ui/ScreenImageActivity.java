@@ -65,8 +65,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void initView() {
         context = this;
-//        Intent intent = getIntent();
-//        mIp = intent.getStringExtra("ip");
+        Intent intent = getIntent();
+        mIp = intent.getStringExtra("ip");
     }
 
     @Override
@@ -154,7 +154,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         setVideoConfiguration(mVideoConfiguration);
         setRecordPacker(packer);
 
-        tcpSender = new TcpSender("192.169.0.198", port);
+        tcpSender = new TcpSender(mIp, port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
         tcpSender.setVideoParams(mVideoConfiguration);
@@ -162,8 +162,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         //创建连接
         tcpSender.openConnect();
         setRecordSender(tcpSender);
-        //开始执行
         startRecording();
+        //开始执行
     }
 
 
@@ -228,20 +228,20 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onDisConnected() {
         //连接失败
-        Log.e(TAG, "onConnected: 连接失败");
+        Log.e(TAG, "onDisConnected");
     }
 
     @Override
     public void onPublishFail() {
         //发送失败
-        Log.e(TAG, "onConnected: 发送失败");
+        Log.e(TAG, "onPublishFail");
     }
 
 
     @Override
     public void onNetGood() {
         //网络好
-        Log.e(TAG, "onConnected: 网络好");
+        Log.i(TAG, "onConnected: 网络好");
         if (loadingDialog==null){
             return;
         }
@@ -272,7 +272,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     .setCancelable(false).show();
             isNetBad = false;
         }
-        Log.e(TAG, "onConnected: 网络差");
+        Log.i(TAG, "onConnected: 网络差");
     }
 
     @Override
