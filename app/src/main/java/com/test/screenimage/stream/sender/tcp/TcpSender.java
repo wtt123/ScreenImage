@@ -30,7 +30,7 @@ public class TcpSender implements Sender, SendQueueListener {
     private int mainCmd;
     private int subCmd;
     //文本消息
-    private String sendBody=null;
+    private String sendBody = null;
 
 
     public TcpSender(String ip, int port) {
@@ -44,18 +44,18 @@ public class TcpSender implements Sender, SendQueueListener {
     }
 
     // TODO: 2018/6/11 wt设置主指令
-    public void setMianCmd(int mainCmd){
-        this.mainCmd=mainCmd;
+    public void setMianCmd(int mainCmd) {
+        this.mainCmd = mainCmd;
     }
 
     // TODO: 2018/6/11 wt设置子指令
-    public void setSubCmd(int subCmd){
-        this.subCmd=subCmd;
+    public void setSubCmd(int subCmd) {
+        this.subCmd = subCmd;
     }
 
     // TODO: 2018/6/11 wt设置要发送的文本内容
-    public void setSendBody(String body){
-        this.sendBody=body;
+    public void setSendBody(String body) {
+        this.sendBody = body;
     }
 
     // TODO: 2018/5/29 wt
@@ -97,49 +97,46 @@ public class TcpSender implements Sender, SendQueueListener {
         mSendQueue.setSendQueueListener(this);
         mSendQueue.start();
     }
+
     private synchronized void connectNotInUi() {
         //设置连接回调
         mTcpConnection.setConnectListener(mTcpListener);
         //开始连接服务器
-        mTcpConnection.connect(ip, port,mainCmd,subCmd,sendBody);
+        mTcpConnection.connect(ip, port, mainCmd, subCmd, sendBody);
     }
 
     // TODO: 2018/6/4 监听回调
     private TcpConnectListener mTcpListener = new TcpConnectListener() {
         @Override
         public void onSocketConnectSuccess() {
-            Log.e("wt", "onSocketConnectSuccess: onSocketConnectSuccess" );
-            connected();
+//            connected();
+            Log.e(TAG, "onSocketConnectSuccess");
         }
 
         @Override
         public void onSocketConnectFail() {
-            Log.e("wt", "onSocketConnectFail: onSocketConnectFail" );
             disConnected();
         }
 
         @Override
         public void onTcpConnectSuccess() {
-            Log.e("wt", "onTcpConnectSuccess: onTcpConnectSuccess");
-           connected();
+//           connected();
+            Log.e(TAG, "onTcpConnectSuccess");
         }
 
         @Override
         public void onTcpConnectFail() {
-            Log.e("wt", "onTcpConnectFail: onTcpConnectFail");
             disConnected();
         }
 
         @Override
         public void onPublishSuccess() {
             //数据发送成功
-            Log.e("wt", "onPublishSuccess: onPublishSuccess" );
             connected();
         }
 
         @Override
         public void onPublishFail() {
-            Log.e("wt", "onPublishFail: onPublishFail" );
             //数据发送失败
             weakHandler.post(new Runnable() {
                 @Override
@@ -151,7 +148,6 @@ public class TcpSender implements Sender, SendQueueListener {
 
         @Override
         public void onSocketDisconnect() {
-            Log.e("wt", "onSocketDisconnect: onSocketDisconnect");
             disConnected();
         }
 
@@ -186,9 +182,6 @@ public class TcpSender implements Sender, SendQueueListener {
             }
         });
     }
-
-
-
 
 
     // TODO: 2018/6/6 连接成功
