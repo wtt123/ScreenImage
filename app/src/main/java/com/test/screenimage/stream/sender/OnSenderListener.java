@@ -10,7 +10,7 @@ package com.test.screenimage.stream.sender;
 public interface OnSenderListener {
     void onConnecting();
     void onConnected();
-    void onDisConnected();
+    void onDisConnected(String message);
     void onPublishFail();
     void onNetGood();
     void onNetBad();

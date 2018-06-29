@@ -9,6 +9,7 @@ import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import com.test.screenimage.R;
 import com.test.screenimage.core.BaseActivity;
@@ -23,7 +24,7 @@ public class ScanQrCodeActivity extends BaseActivity implements View.OnClickList
     @BindView(R.id.fl_my_container)
     FrameLayout flMyContainer;
     @BindView(R.id.btn_open)
-    Button btnOpen;
+    ImageButton btnOpen;
     private Context mContext;
     private int REQUEST_CODE = 1;
     private CaptureFragment captureFragment;
@@ -58,10 +59,12 @@ public class ScanQrCodeActivity extends BaseActivity implements View.OnClickList
                 if (!isOpen) {
                     CodeUtils.isLightEnable(true);
                     isOpen = true;
+                    btnOpen.setSelected(true);
                     return;
                 }
                 CodeUtils.isLightEnable(false);
-                isOpen = true;
+                isOpen = false;
+                btnOpen.setSelected(false);
                 break;
 
         }

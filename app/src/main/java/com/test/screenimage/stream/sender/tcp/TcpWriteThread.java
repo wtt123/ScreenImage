@@ -81,8 +81,7 @@ public class TcpWriteThread extends Thread {
 //            Log.e(TAG,"send data ");
         } catch (IOException e) {
             startFlag = false;
-//            Log.e("TcpWriteThread", "sendData Exception =" + e.toString());
-            if (mListener != null) mListener.socketDisconnect();
+            if (mListener != null) mListener.socketDisconnect(e.getMessage());
         }
     }
 

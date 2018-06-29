@@ -58,13 +58,14 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
         } catch (IOException e) {
             e.printStackTrace();
             if (listener != null) {
-                listener.onSocketConnectFail();
+                listener.onSocketConnectFail(e.getMessage());
                 return;
             }
         }
         listener.onSocketConnectSuccess();
         if (listener == null || socket == null || !socket.isConnected()) {
-            listener.onSocketConnectFail();
+            listener.onSocketConnectFail(null);
+
             return;
         }
         try {
@@ -80,7 +81,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             listener.onTcpConnectSuccess();
         } catch (IOException e) {
             e.printStackTrace();
-            listener.onTcpConnectFail();
+            listener.onTcpConnectFail(e.getMessage());
         }
     }
 
@@ -96,9 +97,9 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     }
 
     @Override
-    public void socketDisconnect() {
+    public void socketDisconnect(String message) {
         //与服务端连接断开
-        listener.onSocketDisconnect();
+        listener.onSocketDisconnect(message);
     }
 
     @Override

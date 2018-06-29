@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class SupportMultipleScreensUtil {
         Resources resources=context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         int widthPixels = displayMetrics.widthPixels;
+        Log.e("123", "init: "+widthPixels+"<<<<<<<"+displayMetrics.heightPixels );
         scale = (float)widthPixels / BASE_SCREEN_WIDTH_FLOAT;
     }
 

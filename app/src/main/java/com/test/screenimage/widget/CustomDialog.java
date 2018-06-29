@@ -267,4 +267,9 @@ public class CustomDialog {
         setLayout();
         dialog.show();
     }
+
+    public void dismiss() {
+        if (dialog == null) return;
+        dialog.dismiss();
+    }
 }

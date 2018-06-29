@@ -18,9 +18,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.skydoves.elasticviews.ElasticButton;
 import com.tbruyelle.rxpermissions2.Permission;
 import com.test.screenimage.R;
+import com.test.screenimage.constant.Constants;
 import com.test.screenimage.core.BaseActivity;
+import com.test.screenimage.utils.PreferenceUtils;
 import com.test.screenimage.utils.ToastUtils;
 
 import com.uuzuche.lib_zxing.activity.CodeUtils;
@@ -34,7 +37,7 @@ import butterknife.OnClick;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.btn_scan)
-    Button btnScan;
+    ElasticButton btnScan;
     private Context mContext;
     private int REQUEST_CODE = 001;
     private Intent mIntent = new Intent();
@@ -71,6 +74,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         ToastUtils.showShort(mContext, "拒绝权限，不再弹出询问框，请前往APP应用设置中打开此权限");
                     }
                 });
+           if (!TextUtils.isEmpty(PreferenceUtils.getString(mContext,Constants.PCIP))){
+               mIntent.setClass(mContext, ScreenImageActivity.class);
+               mIntent.putExtra("ip", PreferenceUtils.getString(mContext,Constants.PCIP));
+               startActivity(mIntent);
+               finish();
+           }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -104,6 +113,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             ToastUtils.showShort(mContext, "数据为空，请重新扫码！");
                             return;
                         }
+                        PreferenceUtils.setString(mContext, Constants.PCIP,result);
                         mIntent.setClass(mContext, ScreenImageActivity.class);
                         mIntent.putExtra("ip", result);
                         startActivity(mIntent);

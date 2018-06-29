@@ -114,9 +114,8 @@ public class TcpSender implements Sender, SendQueueListener {
         }
 
         @Override
-        public void onSocketConnectFail() {
-
-            disConnected();
+        public void onSocketConnectFail(String message) {
+            disConnected(message);
         }
 
         @Override
@@ -126,8 +125,8 @@ public class TcpSender implements Sender, SendQueueListener {
         }
 
         @Override
-        public void onTcpConnectFail() {
-            disConnected();
+        public void onTcpConnectFail(String message) {
+            disConnected(message);
         }
 
         @Override
@@ -148,8 +147,8 @@ public class TcpSender implements Sender, SendQueueListener {
         }
 
         @Override
-        public void onSocketDisconnect() {
-            disConnected();
+        public void onSocketDisconnect(String message) {
+            disConnected(message);
         }
 
     };
@@ -197,11 +196,11 @@ public class TcpSender implements Sender, SendQueueListener {
 
 
     // TODO: 2018/6/6 连接失败
-    private void disConnected() {
+    private void disConnected(String message) {
         weakHandler.post(new Runnable() {
             @Override
             public void run() {
-                sendListener.onDisConnected();
+                sendListener.onDisConnected(message);
             }
         });
     }

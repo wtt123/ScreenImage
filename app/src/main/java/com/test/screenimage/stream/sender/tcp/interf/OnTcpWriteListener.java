@@ -8,5 +8,5 @@ package com.test.screenimage.stream.sender.tcp.interf;
 
 public interface OnTcpWriteListener {
     //断开连接
-    void socketDisconnect();
+    void socketDisconnect(String message);
 }

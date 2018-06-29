@@ -189,8 +189,6 @@ public class NormalSendQueue implements ISendQueue {
         @Override
         public void run() {
             while (mScanFlag) {
-                Log.e("tt", "run: mCurrentScanTime "+mCurrentScanTime);
-                Log.e("tt", "run: SCAN_MAX_TIME "+SCAN_MAX_TIME );
                 //达到仲裁次数了
                 if (mCurrentScanTime == SCAN_MAX_TIME) {
                     int averageDif = 0;

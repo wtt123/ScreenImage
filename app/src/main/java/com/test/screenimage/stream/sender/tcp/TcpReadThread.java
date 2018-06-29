@@ -52,8 +52,7 @@ public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyti
                 acceptMsg();
             } catch (IOException e) {
                 startFlag = false;
-                if (mListener != null) mListener.socketDisconnect();
-                Log.e(TAG, "read data Exception = " + e.toString());
+                if (mListener != null) mListener.socketDisconnect(e.getMessage());
             }
         }
     }

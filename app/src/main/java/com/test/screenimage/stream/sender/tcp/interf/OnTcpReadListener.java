@@ -12,7 +12,7 @@ import com.test.screenimage.entity.ReceiveHeader;
 
 public interface OnTcpReadListener {
 
-    void socketDisconnect();    //断开连接
+    void socketDisconnect(String message);    //断开连接
 
     //收到server消息,连接成功
     //date:解析后的数据包
