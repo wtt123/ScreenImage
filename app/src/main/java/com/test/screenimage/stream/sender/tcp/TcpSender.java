@@ -110,22 +110,29 @@ public class TcpSender implements Sender, SendQueueListener {
         @Override
         public void onSocketConnectSuccess() {
 //            connected();
-            Log.e(TAG, "onSocketConnectSuccess");
+            Log.e("wtt", "onSocketConnectSuccess");
         }
 
         @Override
         public void onSocketConnectFail(String message) {
-            disConnected(message);
+            Log.e("wtt", "onSocketConnectFail: zzzz" );
+            weakHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    sendListener.onConnectFail(message);
+                }
+            });
         }
 
         @Override
         public void onTcpConnectSuccess() {
 //           connected();
-            Log.e(TAG, "onTcpConnectSuccess");
+            Log.e("wtt", "onTcpConnectSuccess");
         }
 
         @Override
         public void onTcpConnectFail(String message) {
+            Log.e("wtt", "onTcpConnectFail: zzz" );
             disConnected(message);
         }
 
@@ -138,6 +145,7 @@ public class TcpSender implements Sender, SendQueueListener {
         @Override
         public void onPublishFail() {
             //数据发送失败
+            Log.e("wtt", "onPublishFail: zz" );
             weakHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -148,6 +156,7 @@ public class TcpSender implements Sender, SendQueueListener {
 
         @Override
         public void onSocketDisconnect(String message) {
+            Log.e("wtt", "onSocketDisconnect: xxxx");
             disConnected(message);
         }
 

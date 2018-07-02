@@ -11,6 +11,7 @@ public interface OnSenderListener {
     void onConnecting();
     void onConnected();
     void onDisConnected(String message);
+    void onConnectFail(String message);
     void onPublishFail();
     void onNetGood();
     void onNetBad();

@@ -32,6 +32,7 @@ import com.test.screenimage.stream.sender.OnSenderListener;
 import com.test.screenimage.stream.sender.tcp.TcpSender;
 import com.test.screenimage.utils.DialogUtils;
 import com.test.screenimage.utils.NetWorkUtils;
+import com.test.screenimage.utils.PreferenceUtils;
 import com.test.screenimage.utils.SopCastLog;
 import com.test.screenimage.utils.SopCastUtils;
 import com.test.screenimage.utils.ToastUtils;
@@ -61,8 +62,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private String mIp;
     //是否已经开启投屏了
     private boolean isStart = false;
-    private boolean isNetBad = true;
-    private boolean isDisconnect=true;
+    private boolean isNetBad = false;
+    private boolean isDisconnect = true;
     private Context context;
     private LoadingDialog loadingDialog;
     private CustomDialog customDialog;
@@ -97,7 +98,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                 break;
             case R.id.btn_stop:
                 stopRecording();
-                resetStatus();
+                isStart = false;
                 break;
         }
     }
@@ -219,7 +220,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private void stopRecording() {
         if (mStreamController != null) {
             mStreamController.stop();
-            resetStatus();
+            isStart = false;
             isNetBad = true;
             ToastUtils.showShort(context, "已停止投屏");
         }
@@ -233,8 +234,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onConnected() {
         //连接成功
-        isNetBad=true;
-        isDisconnect=true;
+        isNetBad = true;
+        isDisconnect = true;
         if (loadingDialog == null) return;
         loadingDialog.dismiss();
         if (customDialog == null) return;
@@ -243,9 +244,9 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onDisConnected(String message) {
-        //连接失败
-        resetStatus();
-        if (isDisconnect){
+        //连接断开
+        isStart = false;
+        if (isDisconnect) {
             new CustomDialog(context).builder()
                     .setTitle("温馨提示！")
                     .setMessage("连接意外断开")
@@ -253,7 +254,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                         @Override
                         public void onClick(View v) {
                             stopRecording();
-                            isDisconnect=false;
+                            isDisconnect = false;
                         }
                     })
                     .setNegativeButton("继续投屏", new View.OnClickListener() {
@@ -264,9 +265,17 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     })
                     .setCancelable(false).show();
         }
-        if (!TextUtils.isEmpty(message)) {
-            Log.e("tt", "onConnected: 连接失败" + message);
-        }
+        Log.e(TAG, "onConnected: 连接失败");
+    }
+
+    @Override
+    public void onConnectFail(String message) {
+        //连接失败
+        ToastUtils.showShort(context,"连接失败，请检查网络，重新扫码连接！！");
+        PreferenceUtils.setString(context, Constants.PCIP, null);
+        Intent intent = new Intent(context, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -314,19 +323,14 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     }
 
-    // TODO: 2018/6/27 把开始投屏按钮状态重置
-    private void resetStatus() {
-        isStart = false;
-    }
 
-
-    private void checkNet(){
+    private void checkNet() {
         //网络检查
         if (!NetWorkUtils.isNetConnected(context) && !NetWorkUtils.isWifiActive(context)) {
-            ToastUtils.showShort(context,"请先连接无线网");
+            ToastUtils.showShort(context, "请先连接无线网");
             return;
         }
-        if (!NetWorkUtils.isInChildNet(mIp,context)){
+        if (!NetWorkUtils.isInChildNet(mIp, context)) {
             StringBuffer msg = new StringBuffer();
             msg.append("服务端端ip地址: " + Constants.PCIP).append(",").append("\n")
                     .append("客户端ip地址: " + Constants.PHONEIP).append(",").append("\n")

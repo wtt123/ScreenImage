@@ -203,7 +203,6 @@ public class NormalSendQueue implements ISendQueue {
                         strLog = strLog + String.format("n%d:%d  ", i, dif);
                     }
                     SopCastLog.e(Constants.TAG, strLog);
-                    Log.e("tt", "run:negativeCounter "+negativeCounter );
                     if (negativeCounter >= DEFAULT_NEGATIVE_COUNT || averageDif < -100) {
                         //坏
                         SopCastLog.d(Constants.TAG, "Bad Send Speed.");
