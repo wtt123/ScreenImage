@@ -93,4 +93,7 @@ public class TcpWriteThread extends Thread {
         this.interrupt();
     }
 
+    public void sendStartBuff() {
+        sendData(new byte[0]);
+    }
 }
