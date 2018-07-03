@@ -1,14 +1,6 @@
 package com.test.screenimage.configuration;
 
-/**
- * @Title: VideoConfiguration
- * @Package com.laifeng.sopcastsdk.configuration
- * @Description:
- * @Author Jim
- * @Date 16/9/14
- * @Time 下午3:20
- * @Version
- */
+
 public final class VideoConfiguration {
     // TODO modify by xu.wang
     //--------------------默认高清时的设置参数--------------------------------

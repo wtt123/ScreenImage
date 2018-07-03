@@ -5,15 +5,6 @@ import android.media.AudioRecord;
 import android.media.MediaCodecInfo;
 import android.util.Log;
 
-/**
- * @Title: AudioConfiguration
- * @Package com.laifeng.sopcastsdk.configuration
- * @Description:
- * @Author Jim
- * @Date 16/9/14
- * @Time 下午3:20
- * @Version
- */
 public final class AudioConfiguration {
     //采样率
     public static final int DEFAULT_FREQUENCY = 44100;

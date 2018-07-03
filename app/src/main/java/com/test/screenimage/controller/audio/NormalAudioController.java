@@ -13,16 +13,6 @@ import com.test.screenimage.constant.Constants;
 import com.test.screenimage.utils.AudioUtils;
 import com.test.screenimage.utils.SopCastLog;
 
-
-/**
- * @Title: NormalAudioController
- * @Package com.laifeng.sopcastsdk.controller.audio
- * @Description:
- * @Author Jim
- * @Date 16/9/14
- * @Time 下午12:53
- * @Version
- */
 public class NormalAudioController implements IAudioController {
     private OnAudioEncodeListener mListener;
     private AudioRecord mAudioRecord;

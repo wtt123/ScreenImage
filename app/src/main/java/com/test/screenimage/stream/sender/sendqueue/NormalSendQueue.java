@@ -15,17 +15,6 @@ import static com.test.screenimage.entity.Frame.FRAME_TYPE_AUDIO;
 import static com.test.screenimage.entity.Frame.FRAME_TYPE_INTER_FRAME;
 import static com.test.screenimage.entity.Frame.FRAME_TYPE_KEY_FRAME;
 
-
-/**
- * @Title: NormalSendQueue
- * @Package com.laifeng.sopcastsdk.stream.sender.sendqueue
- * @Description:
- * @Author Jim
- * @Date 2016/11/21
- * @Time 上午10:33
- * @Version
- */
-
 public class NormalSendQueue implements ISendQueue {
     //    private static final int NORMAL_FRAME_BUFFER_SIZE = 800;
     // TODO modify by wt tcp发送缓存区大小从800改为150

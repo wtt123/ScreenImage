@@ -11,15 +11,6 @@ import android.util.Log;
 import com.test.screenimage.configuration.AudioConfiguration;
 
 
-/**
- * @Title: AudioUtils
- * @Package cn.wecoder.camerademo.audio
- * @Description:
- * @Author Jim
- * @Date 16/3/24
- * @Time 下午5:54
- * @Version
- */
 public class AudioUtils {
 //    public static boolean checkMicSupport(AudioConfiguration audioConfiguration) {
 //        boolean result;

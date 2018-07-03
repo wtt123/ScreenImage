@@ -9,15 +9,6 @@ import com.test.screenimage.utils.SopCastLog;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-/**
- * @Title: AnnexbHelper
- * @Package com.laifeng.sopcastsdk.video
- * @Description:
- * @Author Jim
- * @Date 16/9/1
- * @Time 下午2:20
- * @Version
- */
 public class AnnexbHelper {
 
     // Coded slice of a non-IDR picture slice_layer_without_partitioning_rbsp( )

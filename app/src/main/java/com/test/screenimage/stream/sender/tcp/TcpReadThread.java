@@ -81,63 +81,6 @@ public class TcpReadThread extends Thread implements AnalyticDataUtils.OnAnalyti
         mAnalyticDataUtils.analyticData(bis, receiveHeader);
     }
 
-
-//        if (mListener == null) {
-//            return;
-//        }
-//        if (bis.available() <= 0) {
-//            return;
-//        }
-//        byte[] bytes = new byte[2];
-//        bis.read(bytes);
-//        String s = new String(bytes);
-//        if (TextUtils.isEmpty(s)) {
-//            return;
-//        }
-//        if (TextUtils.equals(s, "OK")) {
-//            mListener.connectSuccess();
-//        }
-//}
-
-//    // TODO: 2018/6/11 wt处理协议相应指令
-//    private void netForV1(BufferedInputStream bis, OnTcpReadListener listener, byte[] bytes)
-//            throws IOException {
-//        //实现数组之间的复制
-//        //bytes：源数组
-//        //srcPos：源数组要复制的起始位置
-//        //dest：目的数组
-//        //destPos：目的数组放置的起始位置
-//        //length：复制的长度
-//        byte[] buff = new byte[4];
-//        System.arraycopy(bytes, 1, buff, 0, 4);
-//        final int mainCmd = ByteUtil.bytesToInt(buff);       //主指令  1`5
-//        buff = new byte[4];
-//        System.arraycopy(bytes, 5, buff, 0, 4);
-//        final int subCmd = ByteUtil.bytesToInt(buff);    //子指令  5`9
-//        buff = new byte[4];
-//        System.arraycopy(bytes, 9, buff, 0, 4);
-//        int stringBodySize = ByteUtil.bytesToInt(buff);//文本数据 9 ~ 13;
-//        buff = new byte[4];
-//        System.arraycopy(bytes, 13, buff, 0, 4);
-//        int byteBodySize = ByteUtil.bytesToInt(buff);//byte数据 13^17
-//        buff = new byte[2 * 1024];
-//        int len = 0;
-//        int totalLen = 0;
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        while ((len = bis.read(buff)) != -1) {
-//            if (len != -1) totalLen += len;
-//            baos.write(buff, 0, len);
-//            if (totalLen >= stringBodySize) {
-//                break;
-//            }
-//        }
-//        final String body = baos.toString();
-//        baos.close();
-//        if (!TextUtils.isEmpty(body)) {
-//            mListener.connectSuccess(mainCmd, subCmd, body);
-//        }
-//    }
-
     /**
      * 停止读
      */

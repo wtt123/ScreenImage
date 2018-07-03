@@ -111,7 +111,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private void requestRecording() {
         checkNet();
         if (!SopCastUtils.isOverLOLLIPOP()) {
-            SopCastLog.d(TAG, "此设备不支持录制屏幕");
+            ToastUtils.showShort(context,"此设备不支持录制屏幕");
             return;
         }
         mMediaProjectionManage = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);

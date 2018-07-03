@@ -8,15 +8,7 @@ import com.test.screenimage.utils.AudioUtils;
 
 import java.util.Arrays;
 
-/**
- * @Title: AudioProcessor
- * @Package com.laifeng.sopcastsdk.audio
- * @Description:
- * @Author Jim
- * @Date 16/9/19
- * @Time 上午9:56
- * @Version
- */
+
 public class AudioProcessor extends Thread {
     private volatile boolean mPauseFlag;
     private volatile boolean mStopFlag;
