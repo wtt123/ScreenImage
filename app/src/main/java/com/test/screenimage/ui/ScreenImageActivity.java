@@ -82,6 +82,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void initData() {
+        checkNet();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -109,7 +110,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void requestRecording() {
-        checkNet();
         if (!SopCastUtils.isOverLOLLIPOP()) {
             ToastUtils.showShort(context,"此设备不支持录制屏幕");
             return;
@@ -348,16 +348,22 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     .setNegativeButton("知道了", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            PreferenceUtils.setString(context, Constants.PCIP, null);
+                            Intent intent = new Intent(context, MainActivity.class);
+                            startActivity(intent);
+                            finish();
                         }
                     }).show();
+
             return;
         }
     }
 
     @Override
     protected void onDestroy() {
-        tcpSender.stop();
+        if (tcpSender!=null){
+            tcpSender.stop();
+        }
         super.onDestroy();
     }
 
