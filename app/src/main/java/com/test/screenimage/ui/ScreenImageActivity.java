@@ -27,6 +27,8 @@ import com.test.screenimage.controller.StreamController;
 import com.test.screenimage.controller.audio.NormalAudioController;
 import com.test.screenimage.controller.video.ScreenVideoController;
 import com.test.screenimage.core.BaseActivity;
+import com.test.screenimage.net.OnTcpSendMessageListner;
+import com.test.screenimage.net.TcpUtil;
 import com.test.screenimage.stream.packer.TcpPacker;
 import com.test.screenimage.stream.sender.OnSenderListener;
 import com.test.screenimage.stream.sender.tcp.TcpSender;
@@ -67,6 +69,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private Context context;
     private LoadingDialog loadingDialog;
     private CustomDialog customDialog;
+    private TcpUtil mTcpUtil;
 
     @Override
     protected int getLayoutId() {
@@ -83,6 +86,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void initData() {
         checkNet();
+        mTcpUtil = new TcpUtil(mIp, port);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -90,12 +94,32 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_start:
-                //开始录制视频
                 if (isStart) {
                     ToastUtils.showShort(context, "正在投屏中，再次点击无效");
                     return;
                 }
-                requestRecording();
+                int width = 360;
+                int height = 640;
+                mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD, ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
+                        , width + "," + height, new OnTcpSendMessageListner() {
+                            @Override
+                            public void success(int mainCmd, int subCmd, String body, byte[] bytes) {
+                                if (mainCmd != ScreenImageApi.LOGIC_REPONSE.MAIN_CMD || subCmd != ScreenImageApi.LOGIC_REPONSE.GET_START_INFO) {
+                                    Log.e(TAG, "收到指令不正确");
+                                    return;
+                                }
+                                Log.e(TAG, "tcp 请求成功 内容是" + body);
+                                //开始录制视频
+                                requestRecording();
+                            }
+
+                            @Override
+                            public void error(Exception e) {
+                                Log.e(TAG, "" + e.toString());
+                            }
+                        });
+
+
                 break;
             case R.id.btn_stop:
                 stopRecording();
@@ -111,7 +135,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void requestRecording() {
         if (!SopCastUtils.isOverLOLLIPOP()) {
-            ToastUtils.showShort(context,"此设备不支持录制屏幕");
+            ToastUtils.showShort(context, "此设备不支持录制屏幕");
             return;
         }
         mMediaProjectionManage = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
@@ -159,7 +183,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
      */
     private void startRecord() {
         TcpPacker packer = new TcpPacker();
-        packer.setSendAudio(true);
+        packer.setSendAudio(false);
         packer.initAudioParams(AudioConfiguration.DEFAULT_FREQUENCY, 16, false);
         mVideoConfiguration = new VideoConfiguration.Builder().build();
         setVideoConfiguration(mVideoConfiguration);
@@ -271,7 +295,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onConnectFail(String message) {
         //连接失败
-        ToastUtils.showShort(context,"连接失败，请检查网络，重新扫码连接！！");
+        ToastUtils.showShort(context, "连接失败，请检查网络，重新扫码连接！！");
         PreferenceUtils.setString(context, Constants.PCIP, null);
         Intent intent = new Intent(context, MainActivity.class);
         startActivity(intent);
@@ -361,7 +385,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void onDestroy() {
-        if (tcpSender!=null){
+        if (tcpSender != null) {
             tcpSender.stop();
         }
         super.onDestroy();

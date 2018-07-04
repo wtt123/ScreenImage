@@ -57,20 +57,41 @@ public class AnalyticDataUtils {
         ReceiveData data = new ReceiveData();
         data.setHeader(receiveHeader);
         data.setSendBody(sendBody == null ? "" : new String(sendBody));
-        Log.e("wtt", "analyticData: " +new String(sendBody));
+        Log.e("wtt", "analyticData: " + new String(sendBody));
         data.setBuff(buff);
-        mListener.onSuccess(data);
+        if (mListener != null) mListener.onSuccess(data);
+    }
+
+    public ReceiveData synchAnalyticData(InputStream is, ReceiveHeader receiveHeader) throws IOException {
+        byte[] sendBody = null;
+        byte[] buff = null;
+        //文本长度
+        if (receiveHeader.getStringBodylength() != 0) {
+//            sendBody=new byte[2 * 1024];
+            sendBody = readByte(is, receiveHeader.getStringBodylength());
+        }
+        //音视频长度
+        if (receiveHeader.getBuffSize() != 0) {
+            buff = readByte(is, receiveHeader.getBuffSize());
+        }
+        ReceiveData data = new ReceiveData();
+        data.setHeader(receiveHeader);
+        data.setSendBody(sendBody == null ? "" : new String(sendBody));
+        Log.e("wtt", "analyticData: " + new String(sendBody));
+        data.setBuff(buff);
+        return data;
     }
 
     /**
      * 保证从流里读到指定长度数据
+     *
      * @param is
      * @param readSize
      * @return
      * @throws IOException
      */
     public byte[] readByte(InputStream is, int readSize) throws IOException {
-        byte[] buff= new byte[readSize];
+        byte[] buff = new byte[readSize];
         int len = 0;
         int eachLen = 0;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
