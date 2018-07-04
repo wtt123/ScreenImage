@@ -49,7 +49,8 @@ public class ScreenVideoController implements IVideoController {
         int height = VideoMediaCodec.getVideoSize(mVideoConfiguration.height);
         //实例化VirtualDisplay,这个类的主要作用是用来获取屏幕信息并保存在里。
         mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenRecoder",
-                width, height, 1, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, surface, null, null);
+                width, height, 1, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, surface,
+                null, null);
     }
 
     @Override

@@ -47,7 +47,6 @@ public class AnalyticDataUtils {
         byte[] buff = null;
         //文本长度
         if (receiveHeader.getStringBodylength() != 0) {
-//            sendBody=new byte[2 * 1024];
             sendBody = readByte(is, receiveHeader.getStringBodylength());
         }
         //音视频长度

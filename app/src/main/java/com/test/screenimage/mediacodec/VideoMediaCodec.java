@@ -37,6 +37,9 @@ public class VideoMediaCodec {
         }
         //设置帧率
         format.setInteger(MediaFormat.KEY_FRAME_RATE, fps);
+        //关键帧间隔时间，通常情况下，你设置成多少问题都不大。
+        //比如你设置成10，那就是10秒一个关键帧。但是，如果你有需求要做视频的预览，那你最好设置成1
+        //因为如果你设置成10，那你会发现，10秒内的预览都是一个截图
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, videoConfiguration.ifi);
         // -----------------ADD BY XU.WANG 当画面静止时,重复最后一帧--------------------------------------------------------
         format.setLong(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000 / 45);

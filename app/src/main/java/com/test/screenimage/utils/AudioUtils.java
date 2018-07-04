@@ -61,7 +61,7 @@ public class AudioUtils {
         // TODO: 2018/6/5 wt 消除回声
         AudioManager audioManager = (AudioManager)context.getSystemService(context.AUDIO_SERVICE);
         audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-        audioManager.setSpeakerphoneOn(true);
+        audioManager.setSpeakerphoneOn(false);
         audioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL, 0,
                 AudioManager.STREAM_VOICE_CALL);
         //音频源，采样率，声道数，采样位数，缓冲区大小
