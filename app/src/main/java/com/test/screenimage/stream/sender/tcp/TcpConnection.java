@@ -79,6 +79,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             mRead.setOnTcpReadListener(this);
             mRead.start();
             listener.onTcpConnectSuccess();
+            mWrite.sendStartBuff();
         } catch (IOException e) {
             e.printStackTrace();
             listener.onTcpConnectFail(e.getMessage());
