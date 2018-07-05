@@ -90,6 +90,7 @@ public class AnalyticDataUtils {
      * @throws IOException
      */
     public byte[] readByte(InputStream is, int readSize) throws IOException {
+        Log.e("wtt", "readByte: 读读" );
         byte[] buff = new byte[readSize];
         int len = 0;
         int eachLen = 0;

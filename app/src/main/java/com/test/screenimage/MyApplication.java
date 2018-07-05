@@ -16,6 +16,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        //让代码执行在主线程
         mHandler = new Handler(getMainLooper());
         SupportMultipleScreensUtil.init(this);
     }

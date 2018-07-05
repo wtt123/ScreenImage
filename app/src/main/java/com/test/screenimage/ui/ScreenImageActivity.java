@@ -41,6 +41,8 @@ import com.test.screenimage.utils.ToastUtils;
 import com.test.screenimage.widget.CustomDialog;
 import com.test.screenimage.widget.LoadingDialog;
 
+import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -53,7 +55,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     ElasticButton btnStart;
     @BindView(R.id.btn_stop)
     ElasticButton btnStop;
-    private String TAG = "wt";
+    private String TAG = "wtt";
     private MediaProjectionManager mMediaProjectionManage;
     private static final int RECORD_REQUEST_CODE = 101;
     private StreamController mStreamController;
@@ -86,6 +88,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void initData() {
         checkNet();
+        Log.e(TAG, "initData: "+mIp );
         mTcpUtil = new TcpUtil(mIp, port);
     }
 
@@ -98,13 +101,16 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showShort(context, "正在投屏中，再次点击无效");
                     return;
                 }
+                Log.e(TAG, "onClick: zzz");
                 int width = 360;
                 int height = 640;
-                mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD, ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
+                mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD,
+                        ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
                         , width + "," + height, new OnTcpSendMessageListner() {
                             @Override
                             public void success(int mainCmd, int subCmd, String body, byte[] bytes) {
-                                if (mainCmd != ScreenImageApi.LOGIC_REPONSE.MAIN_CMD || subCmd != ScreenImageApi.LOGIC_REPONSE.GET_START_INFO) {
+                                if (mainCmd != ScreenImageApi.LOGIC_REPONSE.MAIN_CMD ||
+                                        subCmd != ScreenImageApi.LOGIC_REPONSE.GET_START_INFO) {
                                     Log.e(TAG, "收到指令不正确");
                                     return;
                                 }
@@ -112,10 +118,13 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                                 //开始录制视频
                                 requestRecording();
                             }
-
                             @Override
                             public void error(Exception e) {
-                                Log.e(TAG, "" + e.toString());
+                                Log.e("wtt", "wttt" + e.toString());
+                                PreferenceUtils.setString(context, Constants.PCIP, null);
+                                Intent intent = new Intent(context, MainActivity.class);
+                                startActivity(intent);
+                                finish();
                             }
                         });
 
@@ -141,7 +150,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         mMediaProjectionManage = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         Intent captureIntent = mMediaProjectionManage.createScreenCaptureIntent();
         startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
-        isStart = true;
+
     }
 
 
@@ -183,7 +192,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
      */
     private void startRecord() {
         TcpPacker packer = new TcpPacker();
-        packer.setSendAudio(false);
+        packer.setSendAudio(true);
         packer.initAudioParams(AudioConfiguration.DEFAULT_FREQUENCY, 16, false);
         mVideoConfiguration = new VideoConfiguration.Builder().build();
         setVideoConfiguration(mVideoConfiguration);
@@ -242,6 +251,9 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
      * 停止录屏
      */
     private void stopRecording() {
+        if (mTcpUtil!=null){
+            mTcpUtil.cancel();
+         }
         if (mStreamController != null) {
             mStreamController.stop();
             isStart = false;
@@ -258,6 +270,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onConnected() {
         //连接成功
+        isStart = true;
         isNetBad = true;
         isDisconnect = true;
         if (loadingDialog == null) return;

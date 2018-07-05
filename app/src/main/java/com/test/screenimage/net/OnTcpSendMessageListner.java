@@ -1,8 +1,10 @@
 package com.test.screenimage.net;
 
+import java.io.IOException;
+
 /**
- * Created by xu.wang
- * Date on 2016/11/11 10:52
+ * Created by wt
+ * Date on 2018/7/4
  */
 public interface OnTcpSendMessageListner {
     void success(int mainCmd, int subCmd, String body, byte[] bytes);
