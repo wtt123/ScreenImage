@@ -67,6 +67,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     //是否已经开启投屏了
     private boolean isStart = false;
     private boolean isNetBad = false;
+    private boolean isNetConnet=false;
     private boolean isDisconnect = true;
     private Context context;
     private LoadingDialog loadingDialog;
@@ -271,7 +272,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onConnected() {
         //连接成功
         isStart = true;
-        isNetBad = true;
+        isNetConnet = true;
         isDisconnect = true;
         if (loadingDialog == null) return;
         loadingDialog.dismiss();
@@ -283,6 +284,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onDisConnected(String message) {
         //连接断开
         isStart = false;
+        isNetConnet=false;
         if (isDisconnect) {
             new CustomDialog(context).builder()
                     .setTitle("温馨提示！")
@@ -308,6 +310,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onConnectFail(String message) {
         //连接失败
+        isNetConnet=false;
         ToastUtils.showShort(context, "连接失败，请检查网络，重新扫码连接！！");
         PreferenceUtils.setString(context, Constants.PCIP, null);
         Intent intent = new Intent(context, MainActivity.class);
@@ -325,6 +328,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onNetGood() {
         //网络好
+        isNetBad=false;
         Log.e(TAG, "onConnected: 网络好");
         if (loadingDialog == null) return;
         loadingDialog.dismiss();
@@ -335,8 +339,9 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onNetBad() {
         Log.e(TAG, "onConnected: 网络差");
+        isNetBad=true;
         //网络差
-        if (isNetBad) {
+        if (isNetBad&&isNetConnet) {
             customDialog = new CustomDialog(context);
             customDialog.builder()
                     .setTitle("温馨提示！")
