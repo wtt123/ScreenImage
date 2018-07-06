@@ -1,7 +1,5 @@
 package com.test.screenimage.ui;
-
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.projection.MediaProjectionManager;
@@ -73,6 +71,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private LoadingDialog loadingDialog;
     private CustomDialog customDialog;
     private TcpUtil mTcpUtil;
+    private int mCurrentBps;
+    private int netBodCount = 0;
 
     @Override
     protected int getLayoutId() {
@@ -103,11 +103,9 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     return;
                 }
                 Log.e(TAG, "onClick: zzz");
-                int width = 360;
-                int height = 640;
                 mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD,
                         ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
-                        , width + "," + height, new OnTcpSendMessageListner() {
+                        , Constants.WIDTH + "," + Constants.HEIGHT, new OnTcpSendMessageListner() {
                             @Override
                             public void success(int mainCmd, int subCmd, String body, byte[] bytes) {
                                 if (mainCmd != ScreenImageApi.LOGIC_REPONSE.MAIN_CMD ||
@@ -121,7 +119,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                             }
                             @Override
                             public void error(Exception e) {
-                                Log.e("wtt", "wttt" + e.toString());
                                 PreferenceUtils.setString(context, Constants.PCIP, null);
                                 Intent intent = new Intent(context, MainActivity.class);
                                 startActivity(intent);
@@ -271,8 +268,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onConnected() {
         //连接成功
+        mCurrentBps = mVideoConfiguration.maxBps;
         isStart = true;
-        isNetConnet = true;
         isDisconnect = true;
         if (loadingDialog == null) return;
         loadingDialog.dismiss();
@@ -328,6 +325,22 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onNetGood() {
         //网络好
+        netBodCount = 0;    //
+//            LogUtil.e(TAG, "onNetGood Current Bps: " + mCurrentBps);
+        if (mCurrentBps == mVideoConfiguration.maxBps) {
+            return;
+        }
+        int bps;
+        if (mCurrentBps + 100 <= mVideoConfiguration.maxBps) {
+            bps = mCurrentBps + 100;
+        } else {
+            bps = mVideoConfiguration.maxBps;
+        }
+        boolean result =mStreamController.setVideoBps(bps);
+        if (result) {
+            mCurrentBps = bps;
+        }
+
         isNetBad=false;
         Log.e(TAG, "onConnected: 网络好");
         if (loadingDialog == null) return;
@@ -339,6 +352,27 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onNetBad() {
         Log.e(TAG, "onConnected: 网络差");
+        if (mCurrentBps == mVideoConfiguration.minBps) {
+            netBodCount++;
+            if (netBodCount >= 2) {
+                netBodCount = 0;
+//                createNotification();
+            }
+            return;
+        }
+        int bps;
+        if (mCurrentBps - 550 >= mVideoConfiguration.minBps) {
+            bps = mCurrentBps - 550;
+        } else {
+            bps = mVideoConfiguration.minBps;
+        }
+        boolean result = mStreamController.setVideoBps(bps);
+        if (result) {
+            mCurrentBps = bps;
+        }
+
+
+
         isNetBad=true;
         //网络差
         if (isNetBad&&isNetConnet) {

@@ -7,6 +7,7 @@ import com.test.screenimage.entity.ReceiveData;
 import com.test.screenimage.entity.ReceiveHeader;
 import com.test.screenimage.stream.sender.tcp.EncodeV1;
 import com.test.screenimage.utils.AnalyticDataUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -72,37 +73,36 @@ public class RequestTcp extends Thread {
      * @param subCmd        子命令
      * @param sendBody      发送消息
      * @param connectSoTime 超时时间
-     * @throws Exception    throws Exception
+     * @throws Exception throws Exception
      */
     private void initialSendMessage(int mainCmd, int subCmd, String sendBody,
-                                    byte[] bytes, int connectSoTime) throws Exception{
+                                    byte[] bytes, int connectSoTime) throws Exception {
         if (mAnalyticDataUtils == null) {
             mAnalyticDataUtils = new AnalyticDataUtils();
         }
         mSocket = new Socket();
-
-            mSocket.setReuseAddress(true);
-            SocketAddress socketAddress = new InetSocketAddress(ip, port);
-            mSocket.connect(socketAddress, connectSoTime);
-            mSocket.setSoTimeout(20000);    //此方法意为tcp连接成功后is.read阻塞多长时间
+        mSocket.setReuseAddress(true);
+        SocketAddress socketAddress = new InetSocketAddress(ip, port);
+        mSocket.connect(socketAddress, connectSoTime);
+        mSocket.setSoTimeout(60000);    //此方法意为tcp连接成功后is.read阻塞多长时间
         OutputStream outputStream = mSocket.getOutputStream();
-            EncodeV1 encodeV1 = new EncodeV1(mainCmd, subCmd, sendBody, bytes);
-            outputStream.write(encodeV1.buildSendContent());
-            outputStream.flush();
-            InputStream inputStream = mSocket.getInputStream();
-            byte[] tempBytes = mAnalyticDataUtils.readByte(inputStream, 18);
-            ReceiveHeader receiveHeader = mAnalyticDataUtils.analysisHeader(tempBytes);
-            ReceiveData receiveData = mAnalyticDataUtils.synchAnalyticData(inputStream, receiveHeader);
-            if (mListener != null) {
-                MyApplication.mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mListener.success(receiveData.getHeader().getMainCmd(), receiveData.getHeader().getSubCmd(),
-                                receiveData.getSendBody(), receiveData.getBuff());
-                    }
-                });
-            }
-            mSocket.close();
+        EncodeV1 encodeV1 = new EncodeV1(mainCmd, subCmd, sendBody, bytes);
+        outputStream.write(encodeV1.buildSendContent());
+        outputStream.flush();
+        InputStream inputStream = mSocket.getInputStream();
+        byte[] tempBytes = mAnalyticDataUtils.readByte(inputStream, 18);
+        ReceiveHeader receiveHeader = mAnalyticDataUtils.analysisHeader(tempBytes);
+        ReceiveData receiveData = mAnalyticDataUtils.synchAnalyticData(inputStream, receiveHeader);
+        if (mListener != null) {
+            MyApplication.mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.success(receiveData.getHeader().getMainCmd(), receiveData.getHeader().getSubCmd(),
+                            receiveData.getSendBody(), receiveData.getBuff());
+                }
+            });
+        }
+        mSocket.close();
 
 
     }

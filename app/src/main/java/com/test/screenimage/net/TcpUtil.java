@@ -9,7 +9,7 @@ public class TcpUtil {
     private static TcpUtil instance;
     private String ip;
     private int port;
-    private int connectTime = 2000;
+    private int connectTime = 20000;
 
     private Type mType;
 

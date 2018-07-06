@@ -5,6 +5,7 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.os.Build;
+import android.util.Log;
 
 import com.test.screenimage.configuration.VideoConfiguration;
 import com.test.screenimage.constant.Constants;
@@ -18,11 +19,12 @@ public class VideoMediaCodec {
     public static MediaCodec getVideoMediaCodec(VideoConfiguration videoConfiguration) {
         int videoWidth = getVideoSize(videoConfiguration.width);
         int videoHeight = getVideoSize(videoConfiguration.height);
-        if (Build.MANUFACTURER.equalsIgnoreCase("XIAOMI")) {
-            videoConfiguration.maxBps = 500;
-            videoConfiguration.fps = 10;
-            videoConfiguration.ifi = 3;
-        }
+//        if (Build.MANUFACTURER.equalsIgnoreCase("XIAOMI")) {
+//            Log.e("lw", "getVideoMediaCodec: zzz" );
+//            videoConfiguration.maxBps = 1500;
+//            videoConfiguration.fps = 10;
+//            videoConfiguration.ifi = 3;
+//        }
         MediaFormat format = MediaFormat.createVideoFormat(videoConfiguration.mime, videoWidth, videoHeight);
         //设置颜色格式
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT,

@@ -8,5 +8,7 @@ public class Constants {
     public static String PHONEIP = "phoneIp";
     public static String PCIP = "pcIp";
     public static  long MASK = 0;
+    public static int WIDTH=360;
+    public static int HEIGHT=640;
 }
  
