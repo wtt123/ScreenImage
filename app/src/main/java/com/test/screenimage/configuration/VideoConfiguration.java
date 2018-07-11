@@ -3,7 +3,7 @@ package com.test.screenimage.configuration;
 
 public final class VideoConfiguration {
     // TODO modify by xu.wang
-    //--------------------默认高清时的设置参数--------------------------------
+    //--------------------默认标清时的设置参数--------------------------------
     public static final int DEFAULT_HEIGHT = 640;
     public static final int DEFAULT_WIDTH = 360;
     public static final int DEFAULT_FPS = 15;
@@ -11,14 +11,14 @@ public final class VideoConfiguration {
     public static final int DEFAULT_MIN_BPS = 400;
     public static final int DEFAULT_IFI = 1;    //关键帧间隔时间 单位s
     public static final String DEFAULT_MIME = "video/avc";
-    //--------------------默认标清时的设置参数--------------------------------
-    public static final int SECOND_HEIGHT = 640;
-    public static final int SECOND_WIDTH = 360;
-    public static final int SECOND_FPS = 10;
-    public static final int SECOND_MAX_BPS = 600;
-    public static final int SECOND_MIN_BPS = 300;
-    public static final int SECOND_IFI = 3;
-    public static final String SECOND_MIME = "video/avc";
+//    //--------------------默认标清时的设置参数--------------------------------
+//    public static final int SECOND_HEIGHT = 640;
+//    public static final int SECOND_WIDTH = 360;
+//    public static final int SECOND_FPS = 10;
+//    public static final int SECOND_MAX_BPS = 600;
+//    public static final int SECOND_MIN_BPS = 300;
+//    public static final int SECOND_IFI = 3;
+//    public static final String SECOND_MIME = "video/avc";
 
     public int height;
     public int width;
@@ -38,15 +38,15 @@ public final class VideoConfiguration {
         mime = builder.mime;
     }
 
-    private VideoConfiguration(final SecondBuilder builder) {
-        height = builder.height;
-        width = builder.width;
-        minBps = builder.minBps;
-        maxBps = builder.maxBps;
-        fps = builder.fps;
-        ifi = builder.ifi;
-        mime = builder.mime;
-    }
+//    private VideoConfiguration(final SecondBuilder builder) {
+//        height = builder.height;
+//        width = builder.width;
+//        minBps = builder.minBps;
+//        maxBps = builder.maxBps;
+//        fps = builder.fps;
+//        ifi = builder.ifi;
+//        mime = builder.mime;
+//    }
 
     public static VideoConfiguration createDefault() {
         return new Builder().build();
@@ -93,18 +93,18 @@ public final class VideoConfiguration {
             return new VideoConfiguration(this);
         }
     }
-
-    public static class SecondBuilder {
-        private int height = SECOND_HEIGHT;
-        private int width = SECOND_WIDTH;
-        private int minBps = SECOND_MIN_BPS;
-        private int maxBps = SECOND_MAX_BPS;
-        private int fps = SECOND_FPS;
-        private int ifi = SECOND_IFI;
-        private String mime = SECOND_MIME;
-
-        public VideoConfiguration build() {
-            return new VideoConfiguration(this);
-        }
-    }
+//
+//    public static class SecondBuilder {
+//        private int height = SECOND_HEIGHT;
+//        private int width = SECOND_WIDTH;
+//        private int minBps = SECOND_MIN_BPS;
+//        private int maxBps = SECOND_MAX_BPS;
+//        private int fps = SECOND_FPS;
+//        private int ifi = SECOND_IFI;
+//        private String mime = SECOND_MIME;
+//
+//        public VideoConfiguration build() {
+//            return new VideoConfiguration(this);
+//        }
+//    }
 }

@@ -6,45 +6,32 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-
     <com.skydoves.elasticviews.ElasticButton
         android:id="@+id/btn_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:button_backgroundColor="#30354b"
-        app:button_round="20"
-        app:button_scale="0.7"
         app:button_duration="400"
-        app:button_labelText="开启投屏"
         app:button_labelColor="#ffffff"
         app:button_labelSize="16"
-        app:button_labelStyle="bold"/>
-    <!--<Button-->
-        <!--android:id="@+id/btn_start"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="开始投屏" />-->
+        app:button_labelStyle="bold"
+        app:button_labelText="开启投屏"
+        app:button_round="20"
+        app:button_scale="0.7" />
 
     <com.skydoves.elasticviews.ElasticButton
         android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="250px"
         app:button_backgroundColor="#30354b"
-        app:button_round="20"
-        app:button_scale="0.7"
         app:button_duration="400"
-        app:button_labelText="停止投屏"
         app:button_labelColor="#ffffff"
         app:button_labelSize="16"
-        android:layout_marginTop="250px"
-        app:button_labelStyle="bold"/>
+        app:button_labelStyle="bold"
+        app:button_labelText="停止投屏"
+        app:button_round="20"
+        app:button_scale="0.7" />
 
-    <!--<Button-->
-        <!--android:id="@+id/btn_stop"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/btn_start"-->
-        <!--android:layout_marginTop="30px"-->
-        <!--android:text="停止投屏" />-->
 
 </RelativeLayout>

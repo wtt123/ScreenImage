@@ -47,10 +47,12 @@ public class VideoMediaCodec {
         format.setLong(MediaFormat.KEY_REPEAT_PREVIOUS_FRAME_AFTER, 1000000 / 45);
         //------------------MODIFY BY XU.WANG 为解决MIUI9.5花屏而增加...-------------------------------
         if (Build.MANUFACTURER.equalsIgnoreCase("XIAOMI")) {
+            //设置编码模式
             format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CQ);
         } else {
             format.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
         }
+        //设置复用模式
         format.setInteger(MediaFormat.KEY_COMPLEXITY, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
         MediaCodec mediaCodec = null;
 

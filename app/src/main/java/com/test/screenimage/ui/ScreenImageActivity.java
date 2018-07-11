@@ -1,4 +1,5 @@
 package com.test.screenimage.ui;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,6 +31,8 @@ import com.test.screenimage.net.TcpUtil;
 import com.test.screenimage.stream.packer.TcpPacker;
 import com.test.screenimage.stream.sender.OnSenderListener;
 import com.test.screenimage.stream.sender.tcp.TcpSender;
+import com.test.screenimage.stream.sender.udp.UDPClientThread;
+import com.test.screenimage.stream.sender.udp.interf.OnUdpConnectListener;
 import com.test.screenimage.utils.DialogUtils;
 import com.test.screenimage.utils.NetWorkUtils;
 import com.test.screenimage.utils.PreferenceUtils;
@@ -47,7 +50,8 @@ import butterknife.OnClick;
 /**
  * Created by wt on 2018/6/4.
  */
-public class ScreenImageActivity extends BaseActivity implements View.OnClickListener, OnSenderListener {
+public class ScreenImageActivity extends BaseActivity implements View.OnClickListener,
+        OnSenderListener,OnUdpConnectListener{
 
     @BindView(R.id.btn_start)
     ElasticButton btnStart;
@@ -73,6 +77,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private TcpUtil mTcpUtil;
     private int mCurrentBps;
     private int netBodCount = 0;
+    private UDPClientThread clientThread;
+    private ProgressDialog progressDialog;
 
     @Override
     protected int getLayoutId() {
@@ -82,15 +88,24 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void initView() {
         context = this;
-        Intent intent = getIntent();
-        mIp = intent.getStringExtra("ip");
+//        Intent intent = getIntent();
+//        mIp = intent.getStringExtra("ip");
     }
 
     @Override
     protected void initData() {
-        checkNet();
-        Log.e(TAG, "initData: "+mIp );
-        mTcpUtil = new TcpUtil(mIp, port);
+        showProgress();
+        clientThread = new UDPClientThread(this);
+//        checkNet();
+
+    }
+
+    // TODO: 2018/7/11 显示dialog
+    private void showProgress() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("系统提示");
+        progressDialog.setMessage("正在连接您的显示屏,请稍后...");
+        progressDialog.show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -448,4 +463,20 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         moveTaskToBack(true);
     }
 
+    @Override
+    public void udpConnectSuccess(String ip) {
+        //udp连接成功
+        progressDialog.dismiss();
+        clientThread.interrupt();
+        ToastUtils.showShort(context,"连接成功");
+        if (!TextUtils.isEmpty(ip)) {
+            mIp=ip;
+            mTcpUtil = new TcpUtil(mIp, port);
+        }
+    }
+
+    @Override
+    public void udpDisConnec(String message) {
+      ToastUtils.showShort(context,"连接失败");
+    }
 }
