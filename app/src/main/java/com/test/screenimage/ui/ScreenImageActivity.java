@@ -475,6 +475,5 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void udpDisConnec(String message) {
-//        ToastUtils.showShort(context, "连接失败");
     }
 }

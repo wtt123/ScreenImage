@@ -1,8 +1,8 @@
 package com.test.screenimage.net;
 
 /**
- * Created by xu.wang
- * Date on 2016/11/11 09:48
+ * Created by wt
+ * Date on 2018/7/4 09:48
  * tcp发送消息和文件,并接受回调的方法.
  */
 public class TcpUtil {
