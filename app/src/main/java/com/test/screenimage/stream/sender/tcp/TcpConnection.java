@@ -106,7 +106,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     @Override
     public void connectSuccess(ReceiveData data) {
         //收到数据后，解析后得到数据
-        Log.e("wtt", "connectSuccess: " + data.getHeader().getSubCmd());
+        Log.e(TAG, "connectSuccess: " + data.getHeader().getSubCmd());
         if (data == null) {
             return;
         }
@@ -114,7 +114,6 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
         switch (subCmd) {
             case 0x01:
                 //连接成功，开启发送线程
-                Log.e("wtt", "connectSuccess: 走了");
                 mWrite.start();
                 break;
         }
@@ -127,6 +126,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
             public void run() {
                 super.run();
                 try {
+                    Log.i("TcpConnecttion", "stop");
                     if (out != null) out.close();
                     if (in != null) in.close();
                 } catch (IOException e) {
@@ -149,6 +149,7 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
         if (socket != null && socket.isConnected()) {
             try {
                 socket.close();
+                Log.i(TAG, "socket close");
                 socket = null;
             } catch (Exception e) {
                 e.printStackTrace();

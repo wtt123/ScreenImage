@@ -58,7 +58,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     ElasticButton btnStart;
     @BindView(R.id.btn_stop)
     ElasticButton btnStop;
-    private String TAG = "wtt";
+    private String TAG = "ScreenImageActivity";
     private MediaProjectionManager mMediaProjectionManage;
     private static final int RECORD_REQUEST_CODE = 101;
     private StreamController mStreamController;
@@ -118,7 +118,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showShort(context, "正在投屏中，再次点击无效");
                     return;
                 }
-                Log.e(TAG, "onClick: zzz");
                 mTcpUtil = new TcpUtil(mIp, port);
                 mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD,
                         ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
@@ -471,7 +470,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         progressDialog.dismiss();
         clientThread.interrupt();
         ToastUtils.showShort(context, "连接成功");
-        Log.e("ScreenImageActivity","udp connect ip" + ip);
+        Log.e("ScreenImageActivity","udp connect ip = " + ip);
         if (!TextUtils.isEmpty(ip)) {
             mIp = ip;
             mTcpUtil = new TcpUtil(mIp, port);
