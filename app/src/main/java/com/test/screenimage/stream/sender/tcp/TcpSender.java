@@ -126,7 +126,7 @@ public class TcpSender implements Sender, SendQueueListener {
 
         @Override
         public void onTcpConnectSuccess() {
-//           connected();
+           connected();
             Log.e("wtt", "onTcpConnectSuccess");
         }
 
@@ -139,13 +139,12 @@ public class TcpSender implements Sender, SendQueueListener {
         @Override
         public void onPublishSuccess() {
             //数据发送成功
-            connected();
+//            connected();
         }
 
         @Override
         public void onPublishFail() {
             //数据发送失败
-            Log.e("wtt", "onPublishFail: zz" );
             weakHandler.post(new Runnable() {
                 @Override
                 public void run() {

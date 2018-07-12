@@ -81,7 +81,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private int netBodCount = 0;
     private UDPClientThread clientThread;
     private ProgressDialog progressDialog;
-    private Socket socket;
 
     @Override
     protected int getLayoutId() {
@@ -120,7 +119,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showShort(context, "正在投屏中，再次点击无效");
                     return;
                 }
-                Log.e(TAG, "onClick: zzz");
+                mTcpUtil = new TcpUtil(mIp, port);
                 mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD,
                         ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
                         , Constants.WIDTH + "," + Constants.HEIGHT, new OnTcpSendMessageListner() {
@@ -138,10 +137,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
                             @Override
                             public void error(Exception e) {
-//                                PreferenceUtils.setString(context, Constants.PCIP, null);
-//                                Intent intent = new Intent(context, MainActivity.class);
-//                                startActivity(intent);
-//                                finish();
+                                ToastUtils.showShort(context, e.getMessage());
                             }
                         });
 
@@ -286,6 +282,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onConnected() {
+        Log.e("wtt", "onConnected: zz" );
         //连接成功
         mCurrentBps = mVideoConfiguration.maxBps;
         isStart = true;
@@ -327,11 +324,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onConnectFail(String message) {
         //连接失败
         isNetConnet = false;
-        ToastUtils.showShort(context, "连接失败，请检查网络，重新扫码连接！！");
-        PreferenceUtils.setString(context, Constants.PCIP, null);
-        Intent intent = new Intent(context, MainActivity.class);
-        startActivity(intent);
-        finish();
+        isStart = false;
+        ToastUtils.showShort(context, "投屏失败，请重新投屏！");
     }
 
     @Override
@@ -417,41 +411,41 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     }
 
-
-    private void checkNet() {
-        //网络检查
-        if (!NetWorkUtils.isNetConnected(context) && !NetWorkUtils.isWifiActive(context)) {
-            ToastUtils.showShort(context, "请先连接无线网");
-            return;
-        }
-        if (!NetWorkUtils.isInChildNet(mIp, context)) {
-            StringBuffer msg = new StringBuffer();
-            msg.append("服务端端ip地址: " + Constants.PCIP).append(",").append("\n")
-                    .append("客户端ip地址: " + Constants.PHONEIP).append(",").append("\n")
-                    .append("子网掩码: ").append(Constants.MASK).append(",").append("\n")
-                    .append("服务端和客户端可能不在同一个子网段").append("!").append("\n")
-                    .append("请检查网络配置!").append("\n");
-            String title = "建议将电脑和手机直接连至同一路由下!";
-            SpannableString spanString = new SpannableString(msg + title);
-            spanString.setSpan(new ForegroundColorSpan(Color.RED), msg.length(),
-                    msg.length() + title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            new CustomDialog(context)
-                    .builder()
-                    .setTitle(title)
-                    .setMessage(spanString)
-                    .setNegativeButton("知道了", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            PreferenceUtils.setString(context, Constants.PCIP, null);
-                            Intent intent = new Intent(context, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }).show();
-
-            return;
-        }
-    }
+//
+//    private void checkNet() {
+//        //网络检查
+//        if (!NetWorkUtils.isNetConnected(context) && !NetWorkUtils.isWifiActive(context)) {
+//            ToastUtils.showShort(context, "请先连接无线网");
+//            return;
+//        }
+//        if (!NetWorkUtils.isInChildNet(mIp, context)) {
+//            StringBuffer msg = new StringBuffer();
+//            msg.append("服务端端ip地址: " + Constants.PCIP).append(",").append("\n")
+//                    .append("客户端ip地址: " + Constants.PHONEIP).append(",").append("\n")
+//                    .append("子网掩码: ").append(Constants.MASK).append(",").append("\n")
+//                    .append("服务端和客户端可能不在同一个子网段").append("!").append("\n")
+//                    .append("请检查网络配置!").append("\n");
+//            String title = "建议将电脑和手机直接连至同一路由下!";
+//            SpannableString spanString = new SpannableString(msg + title);
+//            spanString.setSpan(new ForegroundColorSpan(Color.RED), msg.length(),
+//                    msg.length() + title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//            new CustomDialog(context)
+//                    .builder()
+//                    .setTitle(title)
+//                    .setMessage(spanString)
+//                    .setNegativeButton("知道了", new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            PreferenceUtils.setString(context, Constants.PCIP, null);
+//                            Intent intent = new Intent(context, MainActivity.class);
+//                            startActivity(intent);
+//                            finish();
+//                        }
+//                    }).show();
+//
+//            return;
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
@@ -469,19 +463,10 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void udpConnectSuccess(String ip) {
         //udp连接成功
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    socket = new Socket(ip, 4444);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
         progressDialog.dismiss();
         clientThread.interrupt();
         ToastUtils.showShort(context, "连接成功");
+        Log.e("ScreenImageActivity", "udp connect ip" + ip);
         if (!TextUtils.isEmpty(ip)) {
             mIp = ip;
             mTcpUtil = new TcpUtil(mIp, port);
