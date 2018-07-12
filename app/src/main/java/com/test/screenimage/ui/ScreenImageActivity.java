@@ -1,4 +1,5 @@
 package com.test.screenimage.ui;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import com.test.screenimage.widget.CustomDialog;
 import com.test.screenimage.widget.LoadingDialog;
 
 import java.io.IOException;
+import java.net.Socket;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -51,7 +53,7 @@ import butterknife.OnClick;
  * Created by wt on 2018/6/4.
  */
 public class ScreenImageActivity extends BaseActivity implements View.OnClickListener,
-        OnSenderListener,OnUdpConnectListener{
+        OnSenderListener, OnUdpConnectListener {
 
     @BindView(R.id.btn_start)
     ElasticButton btnStart;
@@ -69,7 +71,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     //是否已经开启投屏了
     private boolean isStart = false;
     private boolean isNetBad = false;
-    private boolean isNetConnet=false;
+    private boolean isNetConnet = false;
     private boolean isDisconnect = true;
     private Context context;
     private LoadingDialog loadingDialog;
@@ -79,6 +81,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private int netBodCount = 0;
     private UDPClientThread clientThread;
     private ProgressDialog progressDialog;
+    private Socket socket;
 
     @Override
     protected int getLayoutId() {
@@ -132,12 +135,13 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                                 //开始录制视频
                                 requestRecording();
                             }
+
                             @Override
                             public void error(Exception e) {
-                                PreferenceUtils.setString(context, Constants.PCIP, null);
-                                Intent intent = new Intent(context, MainActivity.class);
-                                startActivity(intent);
-                                finish();
+//                                PreferenceUtils.setString(context, Constants.PCIP, null);
+//                                Intent intent = new Intent(context, MainActivity.class);
+//                                startActivity(intent);
+//                                finish();
                             }
                         });
 
@@ -264,9 +268,9 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
      * 停止录屏
      */
     private void stopRecording() {
-        if (mTcpUtil!=null){
+        if (mTcpUtil != null) {
             mTcpUtil.cancel();
-         }
+        }
         if (mStreamController != null) {
             mStreamController.stop();
             isStart = false;
@@ -296,7 +300,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onDisConnected(String message) {
         //连接断开
         isStart = false;
-        isNetConnet=false;
+        isNetConnet = false;
         if (isDisconnect) {
             new CustomDialog(context).builder()
                     .setTitle("温馨提示！")
@@ -322,7 +326,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onConnectFail(String message) {
         //连接失败
-        isNetConnet=false;
+        isNetConnet = false;
         ToastUtils.showShort(context, "连接失败，请检查网络，重新扫码连接！！");
         PreferenceUtils.setString(context, Constants.PCIP, null);
         Intent intent = new Intent(context, MainActivity.class);
@@ -351,12 +355,12 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         } else {
             bps = mVideoConfiguration.maxBps;
         }
-        boolean result =mStreamController.setVideoBps(bps);
+        boolean result = mStreamController.setVideoBps(bps);
         if (result) {
             mCurrentBps = bps;
         }
 
-        isNetBad=false;
+        isNetBad = false;
         Log.e(TAG, "onConnected: 网络好");
         if (loadingDialog == null) return;
         loadingDialog.dismiss();
@@ -387,10 +391,9 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         }
 
 
-
-        isNetBad=true;
+        isNetBad = true;
         //网络差
-        if (isNetBad&&isNetConnet) {
+        if (isNetBad && isNetConnet) {
             customDialog = new CustomDialog(context);
             customDialog.builder()
                     .setTitle("温馨提示！")
@@ -466,17 +469,27 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void udpConnectSuccess(String ip) {
         //udp连接成功
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    socket = new Socket(ip, 4444);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
         progressDialog.dismiss();
         clientThread.interrupt();
-        ToastUtils.showShort(context,"连接成功");
+        ToastUtils.showShort(context, "连接成功");
         if (!TextUtils.isEmpty(ip)) {
-            mIp=ip;
+            mIp = ip;
             mTcpUtil = new TcpUtil(mIp, port);
         }
     }
 
     @Override
     public void udpDisConnec(String message) {
-      ToastUtils.showShort(context,"连接失败");
+        ToastUtils.showShort(context, "连接失败");
     }
 }

@@ -52,7 +52,7 @@ public class RequestTcp extends Thread {
         try {
             initialSendMessage(mainCmd, subCmd, sendBody, bytes, connectSoTime);
         } catch (final Exception e) {
-            Log.e("TcpUtil", e.toString());
+            Log.e("wtt", e.toString());
             if (MyApplication.mHandler != null) {
                 MyApplication.mHandler.post(new Runnable() {
                     @Override
