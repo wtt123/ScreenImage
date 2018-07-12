@@ -18,13 +18,14 @@ import java.net.MulticastSocket;
 public class UDPClientThread extends Thread {
     static final String BROADCAST_IP = "224.0.0.1";
     //监听的端口号
-    static final int BROADCAST_PORT = 1234;
+    static final int BROADCAST_PORT = 15000;
     private InetAddress inetAddress = null;
     //服务端的局域网IP
     private static String ip;
     private OnUdpConnectListener mListener;
+
     public UDPClientThread(OnUdpConnectListener listener) {
-        this.mListener=listener;
+        this.mListener = listener;
         this.start();
     }
 
@@ -40,12 +41,13 @@ public class UDPClientThread extends Thread {
              */
             multicastSocket = new MulticastSocket(BROADCAST_PORT);
             inetAddress = InetAddress.getByName(BROADCAST_IP);
+            Log.e("UdpClientThread", "udp server start");
             multicastSocket.joinGroup(inetAddress);
             byte buf[] = new byte[1024];
             DatagramPacket dp = new DatagramPacket(buf, buf.length);
             while (true) {
                 multicastSocket.receive(dp);
-                Thread.sleep(3000);
+                Log.e("UdpClientThread", "receive a msg");
                 ip = new String(buf, 0, dp.getLength());
                 multicastSocket.leaveGroup(inetAddress);
                 multicastSocket.close();
@@ -57,10 +59,6 @@ public class UDPClientThread extends Thread {
                 });
 
             }
-        } catch (IOException e) {
-            Log.e("123", "run: zzz1");
-        } catch (InterruptedException e) {
-            Log.e("123", "run: zzz2");
         } catch (Exception e) {
             Log.e("123", "run: zzz");
             MyApplication.mHandler.post(new Runnable() {
@@ -69,6 +67,8 @@ public class UDPClientThread extends Thread {
                     mListener.udpDisConnec(e.getMessage());
                 }
             });
+        } finally {
+            Log.e("UdpClientThread", "udp server close");
         }
     }
 }
