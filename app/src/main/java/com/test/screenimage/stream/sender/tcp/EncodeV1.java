@@ -19,9 +19,6 @@ public class EncodeV1 {
     private String sendBody;//要发送的内容
     private byte[] sendBuffer;    //要发送的音视频内容
 
-//    public EncodeV1(byte[] buff) {
-//        this.buff = buff;
-//    }
 
     /**
      * by wt
@@ -38,16 +35,6 @@ public class EncodeV1 {
         this.sendBuffer = sendBuffer;
     }
 
-    //    public byte[] buildSendContent() {
-//        if (buff == null || buff.length == 0) {
-//            return null;
-//        }
-//        //创建一个4 + buff.length内存缓冲区
-//        ByteBuffer bb = ByteBuffer.allocate(4 + buff.length);
-//        bb.put(ByteUtil.int2Bytes(buff.length));
-//        bb.put(buff);
-//        return bb.array();
-//    }
     public byte[] buildSendContent() {
         int bodyLength = 0;
         int bodyByte = 0;
