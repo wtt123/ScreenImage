@@ -224,7 +224,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         tcpSender = new TcpSender(mIp, port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
-        tcpSender.setSendBody("22");
+        tcpSender.setSendBody(Build.MODEL);
         tcpSender.setVideoParams(mVideoConfiguration);
         tcpSender.setSenderListener(this);
         //创建连接
