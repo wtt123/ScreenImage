@@ -10,6 +10,10 @@ import android.util.Log;
 import com.test.screenimage.constant.Constants;
 
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,20 +25,25 @@ public class NetWorkUtils {
     /**
      * 检查网络是否可用
      */
-    public static boolean isNetConnected(Context context) {
-        ConnectivityManager connectivity = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivity != null) {
-            NetworkInfo info = connectivity.getActiveNetworkInfo();
-            if (info != null && info.isConnected()) {
-                // 当前网络是连接的
-                if (info.getState() == NetworkInfo.State.CONNECTED) {
-                    // 当前所连接的网络可用
-                    return true;
+    public  static boolean isNetWorkConnected(Context context) {
+        // TODO Auto-generated method stub
+        try{
+            ConnectivityManager connectivity = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if(connectivity != null){
+                NetworkInfo netWorkinfo = connectivity.getActiveNetworkInfo();
+                if(netWorkinfo != null && netWorkinfo.isAvailable()){
+                    if(netWorkinfo.getState() == NetworkInfo.State.CONNECTED){
+                        return true;
+                    }
                 }
             }
+        }catch(Exception e){
+            Log.e("UdpService : ",e.toString());
+            return false;
         }
         return false;
     }
+
 
     /**
      * 检测wifi是否连接
@@ -255,4 +264,29 @@ public class NetWorkUtils {
         }
         return new byte[4];
     }
+
+
+    // TODO: 2018/7/12 获取本地所有ip地址
+    public static String getLocalIpAddress() {
+        String address = null;
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        address = inetAddress.getHostAddress().toString();
+                        //ipV6
+                        if (!address.contains("::")) {
+                            return address;
+                        }
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            Log.e("getIpAddress Exception", ex.toString());
+        }
+        return null;
+    }
+
 }

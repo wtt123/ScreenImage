@@ -32,19 +32,10 @@ public class AudioUtils {
 //        return result;
 //    }
 
-    public static int getRecordBufferSize(AudioConfiguration audioConfiguration) {
-        int frequency = audioConfiguration.frequency;
-        int audioEncoding = audioConfiguration.encoding;
-        int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
-        if(audioConfiguration.channelCount == 2) {
-            channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
-        }
-        int size = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
-        return size;
-    }
 
     @TargetApi(18)
-    public static AudioRecord getAudioRecord(AudioConfiguration audioConfiguration,Context context) {
+    public static AudioRecord getAudioRecord(AudioConfiguration audioConfiguration,Context context)
+    {
         int frequency = audioConfiguration.frequency;
         int audioEncoding = audioConfiguration.encoding;
         //单声道(定义采样通道)
@@ -69,5 +60,17 @@ public class AudioUtils {
         AudioRecord audioRecord = new AudioRecord(audioSource, frequency,
                 channelConfiguration, audioEncoding, getRecordBufferSize(audioConfiguration));
         return audioRecord;
+    }
+
+    // TODO: 2018/7/16 wt 内部的音频缓冲区的大小
+    public static int getRecordBufferSize(AudioConfiguration audioConfiguration) {
+        int frequency = audioConfiguration.frequency;
+        int audioEncoding = audioConfiguration.encoding;
+        int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+        if(audioConfiguration.channelCount == 2) {
+            channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_STEREO;
+        }
+        int size = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
+        return size;
     }
 }

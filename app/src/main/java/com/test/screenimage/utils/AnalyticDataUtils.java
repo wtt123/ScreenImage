@@ -101,7 +101,8 @@ public class AnalyticDataUtils {
                 len += eachLen;
                 baos.write(buff, 0, eachLen);
             } else {
-                break;
+                baos.close();
+                throw new IOException();
             }
             if (len < readSize) {
                 buff = new byte[readSize - len];

@@ -3,8 +3,10 @@ package com.test.screenimage.ui;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.media.projection.MediaProjectionManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
@@ -29,6 +31,7 @@ import com.test.screenimage.controller.video.ScreenVideoController;
 import com.test.screenimage.core.BaseActivity;
 import com.test.screenimage.net.OnTcpSendMessageListner;
 import com.test.screenimage.net.TcpUtil;
+import com.test.screenimage.net.boastcast.NetWorkStateReceiver;
 import com.test.screenimage.stream.packer.TcpPacker;
 import com.test.screenimage.stream.sender.OnSenderListener;
 import com.test.screenimage.stream.sender.tcp.TcpSender;
@@ -42,6 +45,10 @@ import com.test.screenimage.utils.SopCastUtils;
 import com.test.screenimage.utils.ToastUtils;
 import com.test.screenimage.widget.CustomDialog;
 import com.test.screenimage.widget.LoadingDialog;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -81,6 +88,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private int netBodCount = 0;
     private UDPClientThread clientThread;
     private ProgressDialog progressDialog;
+    private NetWorkStateReceiver netWorkStateReceiver;
 
     @Override
     protected int getLayoutId() {
@@ -96,9 +104,13 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     protected void initData() {
-        showProgress();
-        clientThread = new UDPClientThread(this);
-//        checkNet();
+        EventBus.getDefault().register(this);
+        if (NetWorkUtils.isNetWorkConnected(context)) {
+            showProgress();
+            clientThread = new UDPClientThread(this);
+            return;
+        }
+        ToastUtils.showShort(context, "请先连接网络");
 
     }
 
@@ -115,14 +127,17 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_start:
+                if (!NetWorkUtils.isNetWorkConnected(context)) {
+                    ToastUtils.showShort(context, "暂不能投屏，请检查网络");
+                    return;
+                }
                 if (isStart) {
                     ToastUtils.showShort(context, "正在投屏中，再次点击无效");
                     return;
                 }
-                mTcpUtil = new TcpUtil(mIp, port);
                 mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD,
                         ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
-                        , Constants.WIDTH + "," + Constants.HEIGHT, new OnTcpSendMessageListner() {
+                        , Constants.WIDTH + "," + Constants.HEIGHT + "," + Build.MODEL, new OnTcpSendMessageListner() {
                             @Override
                             public void success(int mainCmd, int subCmd, String body, byte[] bytes) {
                                 if (mainCmd != ScreenImageApi.LOGIC_REPONSE.MAIN_CMD ||
@@ -275,6 +290,15 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
+    // TODO: 2018/7/2 网络切换时更新当前ui
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(boolean state) {
+        Log.e("lw", "onMessageEvent: " + state);
+        if (!state){
+            stopRecording();
+        }
+    }
+
     @Override
     public void onConnecting() {
         Log.e(TAG, "onConnecting: 链接中");
@@ -411,47 +435,27 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     }
 
-//
-//    private void checkNet() {
-//        //网络检查
-//        if (!NetWorkUtils.isNetConnected(context) && !NetWorkUtils.isWifiActive(context)) {
-//            ToastUtils.showShort(context, "请先连接无线网");
-//            return;
-//        }
-//        if (!NetWorkUtils.isInChildNet(mIp, context)) {
-//            StringBuffer msg = new StringBuffer();
-//            msg.append("服务端端ip地址: " + Constants.PCIP).append(",").append("\n")
-//                    .append("客户端ip地址: " + Constants.PHONEIP).append(",").append("\n")
-//                    .append("子网掩码: ").append(Constants.MASK).append(",").append("\n")
-//                    .append("服务端和客户端可能不在同一个子网段").append("!").append("\n")
-//                    .append("请检查网络配置!").append("\n");
-//            String title = "建议将电脑和手机直接连至同一路由下!";
-//            SpannableString spanString = new SpannableString(msg + title);
-//            spanString.setSpan(new ForegroundColorSpan(Color.RED), msg.length(),
-//                    msg.length() + title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//            new CustomDialog(context)
-//                    .builder()
-//                    .setTitle(title)
-//                    .setMessage(spanString)
-//                    .setNegativeButton("知道了", new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            PreferenceUtils.setString(context, Constants.PCIP, null);
-//                            Intent intent = new Intent(context, MainActivity.class);
-//                            startActivity(intent);
-//                            finish();
-//                        }
-//                    }).show();
-//
-//            return;
-//        }
-//    }
+    @Override
+    protected void onResume() {
+        if (netWorkStateReceiver == null) {
+            netWorkStateReceiver = new NetWorkStateReceiver();
+        }
+        Log.e("lw", "onResume: zzz" );
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(netWorkStateReceiver, filter);
+        super.onResume();
+    }
 
     @Override
     protected void onDestroy() {
+        if (netWorkStateReceiver != null) {
+            unregisterReceiver(netWorkStateReceiver);
+        }
         if (tcpSender != null) {
             tcpSender.stop();
         }
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -466,7 +470,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         progressDialog.dismiss();
         clientThread.interrupt();
         ToastUtils.showShort(context, "连接成功");
-        Log.e("ScreenImageActivity", "udp connect ip = " + ip);
         if (!TextUtils.isEmpty(ip)) {
             mIp = ip;
             mTcpUtil = new TcpUtil(mIp, port);
