@@ -141,7 +141,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                                     Log.e(TAG, "收到指令不正确");
                                     return;
                                 }
-                                Log.e(TAG, "tcp 请求成功 内容是" + body);
                                 //开始录制视频
                                 requestRecording();
                             }
@@ -225,7 +224,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         tcpSender = new TcpSender(mIp, port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
-        tcpSender.setSendBody(Build.MODEL);
+        tcpSender.setSendBody("22");
         tcpSender.setVideoParams(mVideoConfiguration);
         tcpSender.setSenderListener(this);
         //创建连接

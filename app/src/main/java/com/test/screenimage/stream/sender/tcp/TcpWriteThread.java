@@ -1,5 +1,6 @@
 package com.test.screenimage.stream.sender.tcp;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.test.screenimage.entity.Frame;
@@ -25,6 +26,7 @@ public class TcpWriteThread extends Thread {
     private String sendBody;
     private OnTcpWriteListener mListener;
     private final String TAG = "TcpWriteThread";
+    private boolean isSendMsg = false;
 
     /**
      * by wt
@@ -72,8 +74,15 @@ public class TcpWriteThread extends Thread {
     // TODO: 2018/6/4 wt 发送数据
     public void sendData(byte[] buff) {
         try {
-            EncodeV1 encodeV1 = new EncodeV1(mainCmd, subCmd, sendBody, buff);
-            Log.e("ttt", "sendData: "+sendBody );
+            EncodeV1 encodeV1;
+//            if (!TextUtils.isEmpty(sendBody) && !isSendMsg) {
+//                isSendMsg = true;
+                Log.e("ttt", "sendData: zzz"+sendBody );
+                encodeV1 = new EncodeV1(mainCmd, subCmd, sendBody, buff);
+//            } else {
+//                Log.e("ttt", "sendData: 555" );
+//                encodeV1 = new EncodeV1(mainCmd, subCmd, null, buff);
+//            }
             bos.write(encodeV1.buildSendContent());
             bos.flush();
 //            Log.e(TAG,"send data ");

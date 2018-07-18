@@ -1,5 +1,6 @@
 package com.test.screenimage.stream.sender.tcp;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.test.screenimage.configuration.VideoConfiguration;
@@ -30,7 +31,7 @@ public class TcpSender implements Sender, SendQueueListener {
     private int mainCmd;
     private int subCmd;
     //文本消息
-    private String sendBody;
+    private String sendBody = null;
 
 
     public TcpSender(String ip, int port) {
@@ -115,7 +116,7 @@ public class TcpSender implements Sender, SendQueueListener {
 
         @Override
         public void onSocketConnectFail(String message) {
-            Log.e("wtt", "onSocketConnectFail: zzzz" );
+            Log.e("wtt", "onSocketConnectFail: zzzz");
             weakHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -126,13 +127,13 @@ public class TcpSender implements Sender, SendQueueListener {
 
         @Override
         public void onTcpConnectSuccess() {
-           connected();
+            connected();
             Log.e("wtt", "onTcpConnectSuccess");
         }
 
         @Override
         public void onTcpConnectFail(String message) {
-            Log.e("wtt", "onTcpConnectFail: zzz" );
+            Log.e("wtt", "onTcpConnectFail: zzz");
             disConnected(message);
         }
 

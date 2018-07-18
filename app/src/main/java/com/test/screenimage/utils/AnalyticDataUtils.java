@@ -56,7 +56,6 @@ public class AnalyticDataUtils {
         ReceiveData data = new ReceiveData();
         data.setHeader(receiveHeader);
         data.setSendBody(sendBody == null ? "" : new String(sendBody));
-        Log.e("wtt", "analyticData: " + new String(sendBody));
         data.setBuff(buff);
         if (mListener != null) mListener.onSuccess(data);
     }
@@ -90,7 +89,6 @@ public class AnalyticDataUtils {
      * @throws IOException
      */
     public byte[] readByte(InputStream is, int readSize) throws IOException {
-        Log.e("wtt", "readByte: 读读" );
         byte[] buff = new byte[readSize];
         int len = 0;
         int eachLen = 0;
