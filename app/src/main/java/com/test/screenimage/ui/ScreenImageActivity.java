@@ -98,8 +98,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void initView() {
         context = this;
-//        Intent intent = getIntent();
-//        mIp = intent.getStringExtra("ip");
     }
 
     @Override
@@ -110,8 +108,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
             clientThread = new UDPClientThread(this);
             return;
         }
-        ToastUtils.showShort(context, "请先连接网络");
-
     }
 
     // TODO: 2018/7/11 显示dialog
@@ -137,7 +133,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                 }
                 mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD,
                         ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
-                        , Constants.WIDTH + "," + Constants.HEIGHT + "," + Build.MODEL, new OnTcpSendMessageListner() {
+                        , Constants.WIDTH + "," + Constants.HEIGHT, new OnTcpSendMessageListner() {
                             @Override
                             public void success(int mainCmd, int subCmd, String body, byte[] bytes) {
                                 if (mainCmd != ScreenImageApi.LOGIC_REPONSE.MAIN_CMD ||
@@ -229,6 +225,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         tcpSender = new TcpSender(mIp, port);
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
+        tcpSender.setSendBody(Build.MODEL);
         tcpSender.setVideoParams(mVideoConfiguration);
         tcpSender.setSenderListener(this);
         //创建连接
@@ -293,8 +290,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     // TODO: 2018/7/2 网络切换时更新当前ui
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(boolean state) {
-        Log.e("lw", "onMessageEvent: " + state);
-        if (!state){
+        if (!state) {
             stopRecording();
         }
     }
@@ -440,7 +436,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         if (netWorkStateReceiver == null) {
             netWorkStateReceiver = new NetWorkStateReceiver();
         }
-        Log.e("lw", "onResume: zzz" );
+        Log.e("lw", "onResume: zzz");
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(netWorkStateReceiver, filter);

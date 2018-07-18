@@ -1,6 +1,7 @@
 package com.test.screenimage.stream.sender.tcp;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.test.screenimage.constant.ScreenImageApi;
 import com.test.screenimage.utils.ByteUtil;

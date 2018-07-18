@@ -30,7 +30,7 @@ public class TcpSender implements Sender, SendQueueListener {
     private int mainCmd;
     private int subCmd;
     //文本消息
-    private String sendBody = null;
+    private String sendBody;
 
 
     public TcpSender(String ip, int port) {

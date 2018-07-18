@@ -25,47 +25,45 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         System.out.println("网络状态发生变化");
         //检测API是不是小于23，因为到了API23之后getNetworkInfo(int networkType)方法被弃用
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
             //获得ConnectivityManager对象
-            ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService
-                    (Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             //获取ConnectivityManager对象对应的NetworkInfo对象
             // 获取WIFI连接的信息
             NetworkInfo wifiNetworkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            //获取移动数据连接的信息
             NetworkInfo ethNetInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
-            if (wifiNetworkInfo != null && wifiNetworkInfo.isConnected() || ethNetInfo != null && ethNetInfo.isConnected()) {
-                EventBus.getDefault().post(true);
+            if (wifiNetworkInfo.isConnected() && ethNetInfo.isConnected()) {
+                EventBus.getDefault().post(NetWorkUtils.getLocalIpAddress());
                 return;
             }
-            if (!wifiNetworkInfo.isConnected()&&!ethNetInfo.isConnected()) {
-                Log.e("lw", "onReceive: "+ethNetInfo );
-                EventBus.getDefault().post(false);
+            if (!wifiNetworkInfo.isConnected() && !ethNetInfo.isConnected()) {
+                EventBus.getDefault().post("");
                 ToastUtils.showShort(context, "请先连接网络！！");
                 return;
             }
-            return;
         }
+        //API大于23时使用下面的方式进行网络监听
         //获得ConnectivityManager对象
-        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.
-                CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         //获取所有网络连接的信息
         Network[] networks = connMgr.getAllNetworks();
+        //用于存放网络连接信息
+        StringBuilder sb = new StringBuilder();
         //通过循环将网络信息逐个取出来
+        if (networks.length == 0) {
+            EventBus.getDefault().post("");
+            ToastUtils.showShort(context, "请先连接网络！！");
+            return;
+        }
         for (int i = 0; i < networks.length; i++) {
             //获取ConnectivityManager对象对应的NetworkInfo对象
             NetworkInfo networkInfo = connMgr.getNetworkInfo(networks[i]);
-            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI||networkInfo.getType()
-                    ==ConnectivityManager.TYPE_ETHERNET) {
-                if (networkInfo.isConnected()) {
-                    EventBus.getDefault().post(true);
-                } else if (!networkInfo.isConnected()) {
-                    Log.e("lw", "onReceive: zzzzz" );
-                    EventBus.getDefault().post(false);
-//                    ToastUtils.showShort(context, "请先连接网络！！");
-                }
-                break;
+            if (networkInfo.isConnected()) {
+                EventBus.getDefault().post(NetWorkUtils.getLocalIpAddress());
+            } else {
+                EventBus.getDefault().post("");
             }
         }
-
     }
 }

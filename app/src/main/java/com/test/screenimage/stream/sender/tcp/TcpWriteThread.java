@@ -57,9 +57,6 @@ public class TcpWriteThread extends Thread {
             if (frame == null) {
                 continue;
             }
-//            if (frame.data instanceof Video) {
-//                sendData(((Video) frame.data).getData());
-//            }
             // TODO: 2018/5/29 wt修改
             if (frame.data.length != 0) {
                 sendData(frame.data);
@@ -76,6 +73,7 @@ public class TcpWriteThread extends Thread {
     public void sendData(byte[] buff) {
         try {
             EncodeV1 encodeV1 = new EncodeV1(mainCmd, subCmd, sendBody, buff);
+            Log.e("ttt", "sendData: "+sendBody );
             bos.write(encodeV1.buildSendContent());
             bos.flush();
 //            Log.e(TAG,"send data ");
