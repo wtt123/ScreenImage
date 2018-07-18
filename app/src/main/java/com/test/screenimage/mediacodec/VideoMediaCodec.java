@@ -20,7 +20,6 @@ public class VideoMediaCodec {
         int videoWidth = getVideoSize(videoConfiguration.width);
         int videoHeight = getVideoSize(videoConfiguration.height);
 //        if (Build.MANUFACTURER.equalsIgnoreCase("XIAOMI")) {
-//            Log.e("lw", "getVideoMediaCodec: zzz" );
 //            videoConfiguration.maxBps = 1500;
 //            videoConfiguration.fps = 10;
 //            videoConfiguration.ifi = 3;

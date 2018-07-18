@@ -389,7 +389,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
             netBodCount++;
             if (netBodCount >= 2) {
                 netBodCount = 0;
-//                createNotification();
             }
             return;
         }
@@ -436,7 +435,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         if (netWorkStateReceiver == null) {
             netWorkStateReceiver = new NetWorkStateReceiver();
         }
-        Log.e("lw", "onResume: zzz");
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(netWorkStateReceiver, filter);
