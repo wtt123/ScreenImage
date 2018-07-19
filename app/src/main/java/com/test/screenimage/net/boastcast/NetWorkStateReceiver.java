@@ -33,15 +33,20 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
             NetworkInfo wifiNetworkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             //获取移动数据连接的信息
             NetworkInfo ethNetInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
-            if (wifiNetworkInfo.isConnected() && ethNetInfo.isConnected()) {
-                EventBus.getDefault().post(NetWorkUtils.getLocalIpAddress());
-                return;
-            }
-            if (!wifiNetworkInfo.isConnected() && !ethNetInfo.isConnected()) {
+            if (wifiNetworkInfo == null && ethNetInfo == null) {
                 EventBus.getDefault().post("");
                 ToastUtils.showShort(context, "请先连接网络！！");
-                return;
+            } else if (wifiNetworkInfo != null && wifiNetworkInfo.isConnected()) {
+                EventBus.getDefault().post(NetWorkUtils.getLocalIpAddress());
+                ToastUtils.showShort(context, "已连接无线网！！");
+            } else if (ethNetInfo != null && ethNetInfo.isConnected()) {
+                EventBus.getDefault().post(NetWorkUtils.getLocalIpAddress());
+                ToastUtils.showShort(context, "已连接有线网！！");
+            } else {
+                EventBus.getDefault().post("");
+                ToastUtils.showShort(context, "请先连接网络！！");
             }
+            return;
         }
         //API大于23时使用下面的方式进行网络监听
         //获得ConnectivityManager对象
