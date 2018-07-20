@@ -72,14 +72,14 @@ public class ScreenImageService extends Service implements OnSenderListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notification = new Notification.Builder(this)
                     .setChannelId(id)
-                    .setContentTitle("正在投屏中")
-                    .setContentText("....")
+                    .setContentTitle("ScreenImage 正在投屏中")
+                    .setContentText(text)
                     .setContentIntent(getDefalutIntent(Notification.FLAG_FOREGROUND_SERVICE))
                     .setSmallIcon(R.mipmap.ic_launcher).build();
         } else {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                    .setContentTitle("正在投屏中")
-                    .setContentText("....")
+                    .setContentTitle("ScreenImage 正在投屏中")
+                    .setContentText(text)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentIntent(getDefalutIntent(Notification.FLAG_FOREGROUND_SERVICE))
                     .setOngoing(true);

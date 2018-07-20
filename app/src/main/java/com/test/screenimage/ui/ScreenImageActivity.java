@@ -364,7 +364,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void netSpeedChange(String netSpeedMsg) {
-
+        Log.e(TAG,"" + netSpeedMsg);
     }
 
     @Override

@@ -67,11 +67,6 @@ public class TcpWriteThread extends Thread {
             // TODO: 2018/5/29 wt修改
             if (frame.data.length != 0) {
                 sendData(frame.data);
-                if (frame.frameType == Frame.FRAME_TYPE_CONFIGURATION) {
-                    Log.e(TAG, "send sps pps");
-                } else {
-                    Log.i(TAG, "send normal data");
-                }
             }
         }
     }
