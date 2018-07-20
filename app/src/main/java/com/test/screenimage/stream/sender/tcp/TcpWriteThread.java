@@ -9,6 +9,8 @@ import com.test.screenimage.stream.sender.tcp.interf.OnTcpWriteListener;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by wt
@@ -26,7 +28,9 @@ public class TcpWriteThread extends Thread {
     private String sendBody;
     private OnTcpWriteListener mListener;
     private final String TAG = "TcpWriteThread";
-    private boolean isSendMsg = false;
+    private volatile int readLength = 0;
+    private Timer timer;
+    private boolean isCalculate = false;
 
     /**
      * by wt
@@ -54,6 +58,7 @@ public class TcpWriteThread extends Thread {
     @Override
     public void run() {
         super.run();
+        startNetSpeedCalculate();
         while (startFlag) {
             Frame frame = iSendQueue.takeFrame();
             if (frame == null) {
@@ -74,8 +79,9 @@ public class TcpWriteThread extends Thread {
     // TODO: 2018/6/4 wt 发送数据
     public void sendData(byte[] buff) {
         try {
-            EncodeV1 encodeV1= new EncodeV1(mainCmd, subCmd, sendBody, buff);
-            bos.write(encodeV1.buildSendContent());
+            byte[] sendBuff = new EncodeV1(mainCmd, subCmd, sendBody, buff).buildSendContent();
+            if (isCalculate) readLength += sendBuff.length;
+            bos.write(sendBuff);
             bos.flush();
 //            Log.e(TAG,"send data ");
         } catch (IOException e) {
@@ -88,11 +94,36 @@ public class TcpWriteThread extends Thread {
      * 停止写
      */
     public void shutDown() {
+        mListener = null;
+        isCalculate = false;
+        try {
+            if (timer != null) timer.cancel();
+        } catch (Exception e) {
+        }
         startFlag = false;
         this.interrupt();
     }
 
     public void sendStartBuff() {
         sendData(new byte[0]);
+    }
+
+    public void startNetSpeedCalculate() {
+        try {
+            if (timer != null) timer.cancel();
+        } catch (Exception e) {
+        }
+        readLength = 0;
+        isCalculate = true;
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (mListener != null) {
+                    mListener.netSpeedChange((readLength / 1024) + " kb/s");
+                    readLength = 0;
+                }
+            }
+        }, 1000, 1000);
     }
 }

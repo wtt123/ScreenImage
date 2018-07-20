@@ -10,16 +10,24 @@ package com.test.screenimage.stream.sender.tcp.interf;
 public interface TcpConnectListener {
     //socket连接成功
     void onSocketConnectSuccess();
+
     //socket连接失败
     void onSocketConnectFail(String message);
+
     //tcp连接成功
     void onTcpConnectSuccess();
+
     //tcp连接失败
     void onTcpConnectFail(String message);
+
     //发送成功
     void onPublishSuccess();
+
     //发送失败
     void onPublishFail();
+
     //socket断开连接
     void onSocketDisconnect(String message);
+
+    void onNetSpeedChange(String msg);
 }

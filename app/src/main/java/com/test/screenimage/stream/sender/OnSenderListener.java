@@ -8,11 +8,20 @@ package com.test.screenimage.stream.sender;
  */
 
 public interface OnSenderListener {
-    void onConnecting();
-    void onConnected();
-    void onDisConnected(String message);
-    void onConnectFail(String message);
-    void onPublishFail();
-    void onNetGood();
-    void onNetBad();
+      void onConnecting();
+
+      void onConnected();
+
+      void onDisConnected(String message);
+
+      void onConnectFail(String message);
+
+      void onPublishFail();
+
+      void onNetGood();
+
+      void onNetBad();
+
+    void netSpeedChange(String netSpeedMsg);
+
 }

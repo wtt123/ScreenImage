@@ -9,4 +9,6 @@ package com.test.screenimage.stream.sender.tcp.interf;
 public interface OnTcpWriteListener {
     //断开连接
     void socketDisconnect(String message);
+
+    void netSpeedChange(String msg);
 }
