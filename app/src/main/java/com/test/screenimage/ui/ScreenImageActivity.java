@@ -1,14 +1,17 @@
 package com.test.screenimage.ui;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
@@ -32,11 +35,13 @@ import com.test.screenimage.core.BaseActivity;
 import com.test.screenimage.net.OnTcpSendMessageListner;
 import com.test.screenimage.net.TcpUtil;
 import com.test.screenimage.net.boastcast.NetWorkStateReceiver;
+import com.test.screenimage.service.ScreenImageService;
 import com.test.screenimage.stream.packer.TcpPacker;
 import com.test.screenimage.stream.sender.OnSenderListener;
 import com.test.screenimage.stream.sender.tcp.TcpSender;
 import com.test.screenimage.stream.sender.udp.UDPClientThread;
 import com.test.screenimage.stream.sender.udp.interf.OnUdpConnectListener;
+import com.test.screenimage.utils.BatteryUtils;
 import com.test.screenimage.utils.DialogUtils;
 import com.test.screenimage.utils.NetWorkUtils;
 import com.test.screenimage.utils.PreferenceUtils;
@@ -59,22 +64,18 @@ import butterknife.OnClick;
 /**
  * Created by wt on 2018/6/4.
  */
-public class ScreenImageActivity extends BaseActivity implements View.OnClickListener,
-        OnSenderListener, OnUdpConnectListener {
+public class ScreenImageActivity extends BaseActivity implements View.OnClickListener, OnUdpConnectListener, OnSenderListener {
 
     @BindView(R.id.btn_start)
     ElasticButton btnStart;
     @BindView(R.id.btn_stop)
     ElasticButton btnStop;
     private String TAG = "ScreenImageActivity";
-    private MediaProjectionManager mMediaProjectionManage;
+
     private static final int RECORD_REQUEST_CODE = 101;
-    private StreamController mStreamController;
-    private VideoConfiguration mVideoConfiguration;
-    private TcpSender tcpSender;
 
     private int port = 11111;
-    private String mIp;
+    private String mIp = "192.168.1.115";
     //是否已经开启投屏了
     private boolean isStart = false;
     private boolean isNetBad = false;
@@ -84,11 +85,15 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     private LoadingDialog loadingDialog;
     private CustomDialog customDialog;
     private TcpUtil mTcpUtil;
-    private int mCurrentBps;
-    private int netBodCount = 0;
+
     private UDPClientThread clientThread;
     private ProgressDialog progressDialog;
     private NetWorkStateReceiver netWorkStateReceiver;
+
+    private int mResultCode;
+    private MyServiceConnect mConnect;
+    private Intent mData;
+    private MediaProjectionManager mMediaProjectionManage;
 
     @Override
     protected int getLayoutId() {
@@ -131,6 +136,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                     ToastUtils.showShort(context, "正在投屏中，再次点击无效");
                     return;
                 }
+                if (mTcpUtil == null) mTcpUtil = new TcpUtil(mIp, port);
                 mTcpUtil.sendMessage(ScreenImageApi.LOGIC_REQUEST.MAIN_CMD,
                         ScreenImageApi.LOGIC_REQUEST.GET_START_INFO
                         , Constants.WIDTH + "," + Constants.HEIGHT, new OnTcpSendMessageListner() {
@@ -173,9 +179,7 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         mMediaProjectionManage = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         Intent captureIntent = mMediaProjectionManage.createScreenCaptureIntent();
         startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
-
     }
-
 
     /**
      * 跳转回调
@@ -188,85 +192,48 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RECORD_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                NormalAudioController audioController = new NormalAudioController(ScreenImageActivity.this);
-                ScreenVideoController videoController = new ScreenVideoController(mMediaProjectionManage, resultCode, data);
-                mStreamController = new StreamController(videoController, audioController);
-                requestRecordSuccess();
+                mResultCode = resultCode;
+                mData = data;
+                startRecord();
             } else {
-                requestRecordFail();
+                Log.e(TAG, "requestRecordFail: 用戶拒绝录制屏幕");
             }
         }
     }
 
-    /**
-     * 允许录制
-     */
-    private void requestRecordSuccess() {
-        startRecord();
-    }
-
-    private void requestRecordFail() {
-        Log.e(TAG, "requestRecordFail: 用戶拒绝录制屏幕");
-    }
-
-
-    /**
-     * 连接/编码/发送
-     */
     private void startRecord() {
-        TcpPacker packer = new TcpPacker();
-        packer.setSendAudio(true);
-        packer.initAudioParams(AudioConfiguration.DEFAULT_FREQUENCY, 16, false);
-        mVideoConfiguration = new VideoConfiguration.Builder().build();
-        setVideoConfiguration(mVideoConfiguration);
-        setRecordPacker(packer);
-
-        tcpSender = new TcpSender(mIp, port);
-        tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
-        tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
-        tcpSender.setSendBody(Build.MODEL);
-        tcpSender.setVideoParams(mVideoConfiguration);
-        tcpSender.setSenderListener(this);
-        //创建连接
-        tcpSender.openConnect();
-        setRecordSender(tcpSender);
-        //开始执行
-        startRecording();
+        Intent intent = new Intent(this, ScreenImageService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
+        mConnect = new MyServiceConnect();
+        bindService(intent, mConnect, Context.BIND_AUTO_CREATE);
+        checkIgnoreBattery();
     }
 
-
-    private void setVideoConfiguration(VideoConfiguration videoConfiguration) {
-        if (mStreamController != null) {
-            mStreamController.setVideoConfiguration(videoConfiguration);
+    //检查是否忽略电池优化
+    private void checkIgnoreBattery() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                BatteryUtils.ignoreBatteryOptimization(this);
+            } catch (Exception e) {
+                Log.e(TAG, "unable to set ignore battery optimization Exception = " + e.toString());
+            }
         }
     }
 
-    /**
-     * 编码
-     *
-     * @param packer
-     */
-    private void setRecordPacker(TcpPacker packer) {
-        if (mStreamController != null) {
-            mStreamController.setPacker(packer);
+    class MyServiceConnect implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            ((ScreenImageService.ScreenImageBinder) binder).getService().
+                    startController(mMediaProjectionManage, mResultCode, mData, ScreenImageActivity.this, mIp, port);
         }
-    }
 
-    /**
-     * 设置发送器
-     *
-     * @param tcpSender
-     */
-    private void setRecordSender(TcpSender tcpSender) {
-        if (mStreamController != null) {
-            mStreamController.setSender(tcpSender);
-        }
-    }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
 
-    private void startRecording() {
-        if (mStreamController != null) {
-            //开始录制等操作
-            mStreamController.start();
         }
     }
 
@@ -278,12 +245,15 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         if (mTcpUtil != null) {
             mTcpUtil.cancel();
         }
-        if (mStreamController != null) {
-            mStreamController.stop();
-            isStart = false;
-            isNetBad = true;
-            ToastUtils.showShort(context, "已停止投屏");
+        try {
+            unbindService(mConnect);
+        } catch (Exception e) {
+
         }
+        isStart = false;
+        isNetBad = true;
+        ToastUtils.showShort(context, "已停止投屏");
+
     }
 
     // TODO: 2018/7/2 网络切换时更新当前ui
@@ -303,7 +273,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     public void onConnected() {
         Log.e("wtt", "onConnected: zz");
         //连接成功
-        mCurrentBps = mVideoConfiguration.maxBps;
         isStart = true;
         isDisconnect = true;
         if (loadingDialog == null) return;
@@ -356,23 +325,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
 
     @Override
     public void onNetGood() {
-        //网络好
-        netBodCount = 0;    //
-//            LogUtil.e(TAG, "onNetGood Current Bps: " + mCurrentBps);
-        if (mCurrentBps == mVideoConfiguration.maxBps) {
-            return;
-        }
-        int bps;
-        if (mCurrentBps + 100 <= mVideoConfiguration.maxBps) {
-            bps = mCurrentBps + 100;
-        } else {
-            bps = mVideoConfiguration.maxBps;
-        }
-        boolean result = mStreamController.setVideoBps(bps);
-        if (result) {
-            mCurrentBps = bps;
-        }
-
         isNetBad = false;
         Log.e(TAG, "onConnected: 网络好");
         if (loadingDialog == null) return;
@@ -384,25 +336,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     @Override
     public void onNetBad() {
         Log.e(TAG, "onConnected: 网络差");
-        if (mCurrentBps == mVideoConfiguration.minBps) {
-            netBodCount++;
-            if (netBodCount >= 2) {
-                netBodCount = 0;
-            }
-            return;
-        }
-        int bps;
-        if (mCurrentBps - 550 >= mVideoConfiguration.minBps) {
-            bps = mCurrentBps - 550;
-        } else {
-            bps = mVideoConfiguration.minBps;
-        }
-        boolean result = mStreamController.setVideoBps(bps);
-        if (result) {
-            mCurrentBps = bps;
-        }
-
-
         isNetBad = true;
         //网络差
         if (isNetBad && isNetConnet) {
@@ -430,6 +363,11 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     }
 
     @Override
+    public void netSpeedChange(String netSpeedMsg) {
+        Log.e(TAG,"" + netSpeedMsg);
+    }
+
+    @Override
     protected void onResume() {
         if (netWorkStateReceiver == null) {
             netWorkStateReceiver = new NetWorkStateReceiver();
@@ -444,9 +382,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
     protected void onDestroy() {
         if (netWorkStateReceiver != null) {
             unregisterReceiver(netWorkStateReceiver);
-        }
-        if (tcpSender != null) {
-            tcpSender.stop();
         }
         EventBus.getDefault().unregister(this);
         super.onDestroy();

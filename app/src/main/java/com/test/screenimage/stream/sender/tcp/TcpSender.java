@@ -160,6 +160,16 @@ public class TcpSender implements Sender, SendQueueListener {
             disConnected(message);
         }
 
+        @Override
+        public void onNetSpeedChange(String msg) {
+            weakHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (sendListener != null) sendListener.netSpeedChange(msg);
+                }
+            });
+        }
+
     };
 
 

@@ -104,6 +104,11 @@ public class TcpConnection implements OnTcpReadListener, OnTcpWriteListener {
     }
 
     @Override
+    public void netSpeedChange(String msg) {
+        if (listener != null) listener.onNetSpeedChange(msg);
+    }
+
+    @Override
     public void connectSuccess(ReceiveData data) {
         //收到数据后，解析后得到数据
         Log.e(TAG, "connectSuccess: " + data.getHeader().getSubCmd());
