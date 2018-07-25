@@ -34,6 +34,8 @@ public class RequestTcp extends Thread {
     private AnalyticDataUtils mAnalyticDataUtils;
     private OnTcpSendMessageListner mListener;
     private int connectSoTime;
+    private OutputStream outputStream;
+    private InputStream inputStream;
 
     public RequestTcp(String ip, int port, int mainCmd, int subCmd, String sendBody, byte[] bytes,
                       int connectSoTime, OnTcpSendMessageListner listener) {
@@ -85,11 +87,11 @@ public class RequestTcp extends Thread {
         SocketAddress socketAddress = new InetSocketAddress(ip, port);
         mSocket.connect(socketAddress, connectSoTime);
         mSocket.setSoTimeout(60000);    //此方法意为tcp连接成功后is.read阻塞多长时间
-        OutputStream outputStream = mSocket.getOutputStream();
+        outputStream = mSocket.getOutputStream();
         EncodeV1 encodeV1 = new EncodeV1(mainCmd, subCmd, sendBody, bytes);
         outputStream.write(encodeV1.buildSendContent());
         outputStream.flush();
-        InputStream inputStream = mSocket.getInputStream();
+        inputStream = mSocket.getInputStream();
         byte[] tempBytes = mAnalyticDataUtils.readByte(inputStream, 18);
         ReceiveHeader receiveHeader = mAnalyticDataUtils.analysisHeader(tempBytes);
         ReceiveData receiveData = mAnalyticDataUtils.synchAnalyticData(inputStream, receiveHeader);
@@ -107,8 +109,19 @@ public class RequestTcp extends Thread {
 
     }
 
-
+    // TODO: 2018/7/25 关闭
     public void shutdown() {
+        try {
+            if (outputStream != null) outputStream.close();
+            if (inputStream != null) inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        clearSocket();
+        this.interrupt();
+    }
+
+    private void clearSocket() {
         if (mSocket != null && (!mSocket.isClosed())) {
             try {
                 mSocket.close();
@@ -117,6 +130,5 @@ public class RequestTcp extends Thread {
                 e.printStackTrace();
             }
         }
-        this.interrupt();
     }
 }

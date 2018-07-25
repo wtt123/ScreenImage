@@ -22,6 +22,9 @@ public interface OnSenderListener {
 
       void onNetBad();
 
+      // TODO: 2018/7/25 手动断开连接
+      void shutDown();
+
     void netSpeedChange(String netSpeedMsg);
 
 }

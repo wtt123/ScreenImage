@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.test.screenimage.R;
@@ -171,6 +172,13 @@ public class ScreenImageService extends Service implements OnSenderListener {
     }
 
     @Override
+    public void shutDown() {
+        if (mListener != null) {
+            mListener.shutDown();
+        }
+    }
+
+    @Override
     public void netSpeedChange(String netSpeedMsg) {
         createNotification(netSpeedMsg);
         if (mListener != null) mListener.netSpeedChange(netSpeedMsg);
@@ -183,7 +191,8 @@ public class ScreenImageService extends Service implements OnSenderListener {
         }
     }
 
-    public void startController(MediaProjectionManager mMediaProjectionManage, int resultCode, Intent data, OnSenderListener listener, String ip, int port) {
+    public void startController(MediaProjectionManager mMediaProjectionManage, int resultCode,
+                                Intent data, OnSenderListener listener, String ip, int port) {
         ScreenVideoController screenVideoController = new ScreenVideoController(mMediaProjectionManage, resultCode, data);
         NormalAudioController audioController = new NormalAudioController(this);
         mStreamController = new StreamController(screenVideoController, audioController);
@@ -202,20 +211,45 @@ public class ScreenImageService extends Service implements OnSenderListener {
         tcpSender.openConnect();
     }
 
+//    @Override
+//    public void unbindService(ServiceConnection conn) {
+//        Log.e("ttt", "unbindService: zzz" );
+//        super.unbindService(conn);
+//        if (mStreamController != null) {
+//            mStreamController.stop();
+//        }
+//        if (tcpSender != null) {
+//            tcpSender.stop();
+//        }
+//    }
+
+
     @Override
-    public void unbindService(ServiceConnection conn) {
-        super.unbindService(conn);
+    public void onRebind(Intent intent) {
+        super.onRebind(intent);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        stopRecording();
+        return true;
+
+
+    }
+
+    private void stopRecording() {
+        Log.e("ttt", "stopRecording: zzz");
         if (mStreamController != null) {
             mStreamController.stop();
         }
-        if (tcpSender != null) {
-            tcpSender.stop();
-        }
+        shutDown();
+        stopForeground(true);
     }
 
     @Override
     public void onDestroy() {
         ToastUtils.show(this, "投屏服务停止了", Toast.LENGTH_SHORT);
+        stopForeground(true);// 停止前台服务--参数：表示是否移除之前的通知
         super.onDestroy();
     }
 

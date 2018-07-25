@@ -6,46 +6,46 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Color;
+
 import android.media.projection.MediaProjectionManager;
 import android.net.ConnectivityManager;
 import android.os.Build;
-import android.os.Handler;
+
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AlertDialog;
-import android.text.SpannableString;
-import android.text.Spanned;
+
+
+
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.skydoves.elasticviews.ElasticButton;
+
 import com.test.screenimage.R;
-import com.test.screenimage.configuration.AudioConfiguration;
-import com.test.screenimage.configuration.VideoConfiguration;
+
+
 import com.test.screenimage.constant.Constants;
 import com.test.screenimage.constant.ScreenImageApi;
-import com.test.screenimage.controller.StreamController;
-import com.test.screenimage.controller.audio.NormalAudioController;
-import com.test.screenimage.controller.video.ScreenVideoController;
+
+
+
 import com.test.screenimage.core.BaseActivity;
 import com.test.screenimage.net.OnTcpSendMessageListner;
 import com.test.screenimage.net.TcpUtil;
 import com.test.screenimage.net.boastcast.NetWorkStateReceiver;
 import com.test.screenimage.service.ScreenImageService;
-import com.test.screenimage.stream.packer.TcpPacker;
+
 import com.test.screenimage.stream.sender.OnSenderListener;
-import com.test.screenimage.stream.sender.tcp.TcpSender;
+
 import com.test.screenimage.stream.sender.udp.UDPClientThread;
 import com.test.screenimage.stream.sender.udp.interf.OnUdpConnectListener;
 import com.test.screenimage.utils.BatteryUtils;
-import com.test.screenimage.utils.DialogUtils;
+
 import com.test.screenimage.utils.NetWorkUtils;
-import com.test.screenimage.utils.PreferenceUtils;
-import com.test.screenimage.utils.SopCastLog;
+
+
 import com.test.screenimage.utils.SopCastUtils;
 import com.test.screenimage.utils.ToastUtils;
 import com.test.screenimage.widget.CustomDialog;
@@ -63,13 +63,15 @@ import butterknife.OnClick;
 
 /**
  * Created by wt on 2018/6/4.
+ * OnSenderListener
  */
-public class ScreenImageActivity extends BaseActivity implements View.OnClickListener, OnUdpConnectListener, OnSenderListener {
+public class ScreenImageActivity extends BaseActivity implements View.OnClickListener,
+        OnUdpConnectListener, OnSenderListener {
 
     @BindView(R.id.btn_start)
-    ElasticButton btnStart;
+    Button btnStart;
     @BindView(R.id.btn_stop)
-    ElasticButton btnStop;
+    Button btnStop;
     private String TAG = "ScreenImageActivity";
 
     private static final int RECORD_REQUEST_CODE = 101;
@@ -228,7 +230,8 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             ((ScreenImageService.ScreenImageBinder) binder).getService().
-                    startController(mMediaProjectionManage, mResultCode, mData, ScreenImageActivity.this, mIp, port);
+                    startController(mMediaProjectionManage, mResultCode, mData,
+                            ScreenImageActivity.this, mIp, port);
         }
 
         @Override
@@ -360,6 +363,12 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
             isNetBad = false;
         }
 
+    }
+
+    @Override
+    public void shutDown() {
+        Log.e("wtt", "shutDown: zzz" );
+        if (mTcpUtil!=null)mTcpUtil.cancel();
     }
 
     @Override
