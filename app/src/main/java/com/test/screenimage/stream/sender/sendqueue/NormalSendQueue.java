@@ -130,7 +130,7 @@ public class NormalSendQueue implements ISendQueue {
                         mTotalFrameCount.getAndDecrement();
                         mGiveUpFrameCount.getAndIncrement();
                         pFrameDelete = true;
-                    } else if (frame.frameType == FRAME_TYPE_KEY_FRAME) {
+                    } else if (frame.frameType == 3) {
                         if (mKeyFrameCount.get() > 5) {
                             showLog("丢掉了一个关键帧.. total" + mKeyFrameCount.get());
                             mFrameBuffer.remove(frame);

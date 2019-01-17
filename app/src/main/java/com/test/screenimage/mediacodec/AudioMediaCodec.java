@@ -22,6 +22,7 @@ public class AudioMediaCodec {
         //比特率 声音中的比特率是指将模拟声音信号转换成数字声音信号后，单位时间内的二进制数据量
         // 是间接衡量音频质量的一个指标
         format.setInteger(MediaFormat.KEY_BIT_RATE, configuration.maxBps * 1024);
+        //设置采样率
         format.setInteger(MediaFormat.KEY_SAMPLE_RATE, configuration.frequency);
         int maxInputSize = AudioUtils.getRecordBufferSize(configuration);
         //传入的数据大小

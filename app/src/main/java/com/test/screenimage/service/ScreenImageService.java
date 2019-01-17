@@ -29,7 +29,7 @@ import com.test.screenimage.ui.ScreenImageActivity;
 import com.test.screenimage.utils.ToastUtils;
 
 /**
- * Created by xu.wang
+ * Created by wt
  * Date on  2018/7/20 16:14:02.
  *
  * @Desc
@@ -191,6 +191,15 @@ public class ScreenImageService extends Service implements OnSenderListener {
         }
     }
 
+    /**
+     * 开始录制屏幕
+     * @param mMediaProjectionManage
+     * @param resultCode
+     * @param data
+     * @param listener
+     * @param ip
+     * @param port
+     */
     public void startController(MediaProjectionManager mMediaProjectionManage, int resultCode,
                                 Intent data, OnSenderListener listener, String ip, int port) {
         ScreenVideoController screenVideoController = new ScreenVideoController(mMediaProjectionManage, resultCode, data);
@@ -203,7 +212,7 @@ public class ScreenImageService extends Service implements OnSenderListener {
         tcpSender.setMianCmd(ScreenImageApi.RECORD.MAIN_CMD);
         tcpSender.setSubCmd(ScreenImageApi.RECORD.RECORDER_REQUEST_START);
         tcpSender.setSendBody(Build.MODEL);
-        mVideoConfiguration = mVideoConfiguration = new VideoConfiguration.Builder().setSize(1080, 1920).build();
+        mVideoConfiguration = new VideoConfiguration.Builder().setSize(1080, 1920).build();
         mStreamController.setVideoConfiguration(mVideoConfiguration);
         mStreamController.setPacker(packer);
         mStreamController.setSender(tcpSender);

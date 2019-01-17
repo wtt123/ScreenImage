@@ -57,10 +57,8 @@ public class UDPClientThread extends Thread {
                         mListener.udpConnectSuccess(ip);
                     }
                 });
-
             }
         } catch (Exception e) {
-            Log.e("123", "run: zzz");
             MyApplication.mHandler.post(new Runnable() {
                 @Override
                 public void run() {

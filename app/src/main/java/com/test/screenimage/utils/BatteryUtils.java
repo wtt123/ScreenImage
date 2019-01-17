@@ -11,7 +11,7 @@ import android.support.annotation.RequiresApi;
 import static android.content.Context.POWER_SERVICE;
 
 /**
- * Created by xu.wang
+ * Created by wt
  * Date on  2017/12/13 15:20:46.
  *
  * @Desc 检查设置忽略电池优化.

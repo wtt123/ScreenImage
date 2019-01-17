@@ -28,7 +28,7 @@ public class VideoMediaCodec {
         //设置颜色格式
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        //设置比特率
+        //设置比特率(设置码率，通常码率越高，视频越清晰)
         format.setInteger(MediaFormat.KEY_BIT_RATE, videoConfiguration.maxBps * 1024);
         int fps = videoConfiguration.fps;
         //设置摄像头预览帧率

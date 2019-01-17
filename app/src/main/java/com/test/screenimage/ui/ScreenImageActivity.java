@@ -159,7 +159,6 @@ public class ScreenImageActivity extends BaseActivity implements View.OnClickLis
                             }
                         });
 
-
                 break;
             case R.id.btn_stop:
                 stopRecording();

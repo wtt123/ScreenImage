@@ -229,7 +229,7 @@ public class TcpSender implements Sender, SendQueueListener {
     }
 
     /**
-     * add by xu.wang 为解决首次黑屏而加
+     * add by wt 为解决首次黑屏而加
      */
     public void setSpsPps(byte[] spsPps) {
         if (mTcpConnection != null) mTcpConnection.setSpsPps(spsPps);

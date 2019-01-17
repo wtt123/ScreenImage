@@ -100,9 +100,9 @@ public class ScreenRecordEncoder {
             return;
         }
         SopCastLog.d(Constants.TAG, "bps :" + bps * 1024);
+        // TODO: 2018/9/10 动态调整目标码率
         Bundle bitrate = new Bundle();
         bitrate.putInt(MediaCodec.PARAMETER_KEY_VIDEO_BITRATE, bps * 1024);
-//        bitrate.putInt(MediaCodec.);
         mMediaCodec.setParameters(bitrate);
     }
 
